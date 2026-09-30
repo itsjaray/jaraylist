@@ -368,6 +368,7 @@
         <h1>🎵 JARAY Lyrics List [Drop Eb]</h1>
         <div class="controls">
             <button id="themeToggleBtn" onclick="toggleTheme()">☀️ โหมดสว่าง</button>
+            <button onclick="checkAllImages()" style="margin-left: 8px;">🔍 เช็ครูป</button>
         </div>
     </header>
 
@@ -659,6 +660,31 @@
             clearBtn.style.display = 'none';
             input.focus(); // โฟกัสกลับมาที่ช่องพิมพ์
             filterSongs();
+        }
+
+        async function checkAllImages() {
+            let errorSongs = [];
+            
+            // แจ้งเตือนผู้ใช้ว่ากำลังตรวจสอบ (เผื่อเพลงเยอะ)
+            console.log("🔍 กำลังตรวจสอบรูปภาพทั้งหมด...");
+
+            for (let song of songs) {
+                await new Promise((resolve) => {
+                    const img = new Image();
+                    img.src = song.image;
+                    img.onload = () => resolve();
+                    img.onerror = () => {
+                        errorSongs.push(`ID: ${song.id} - ${song.title} (${song.image})`);
+                        resolve();
+                    };
+                });
+            }
+
+            if (errorSongs.length === 0) {
+                alert("✨ ยอดเยี่ยม! รูปภาพทั้งหมด 100% โหลดติดปกติไม่มีข้อผิดพลาด");
+            } else {
+                alert(`⚠️ พบรูปภาพที่มีปัญหาทั้งหมด ${errorSongs.length} รูป:\n\n` + errorSongs.join('\n'));
+            }
         }
         
     </script>
