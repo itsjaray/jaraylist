@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lyrics App - คลังเนื้อเพลง</title>
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #212529;
+            --text-muted: #6c757d;
+            --border-color: #dee2e6;
+            --primary-color: #0d6efd;
+            --primary-hover: #0b5ed7;
+            --active-bg: #e7f1ff;
+            --font-size: 16px;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --text-muted: #a0a0a0;
+            --border-color: #333333;
+            --primary-color: #bb86fc;
+            --primary-hover: #3700b3;
+            --active-bg: #2d2438;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        header {
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        h1 {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        button {
+            background: var(--card-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        button:active {
+            opacity: 0.7;
+        }
+
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 350px;
+            background-color: var(--card-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .search-box {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 8px 12px;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        .filter-tags {
+            display: flex;
+            gap: 6px;
+            padding: 8px 12px;
+            overflow-x: auto;
+            border-bottom: 1px solid var(--border-color);
+            white-space: nowrap;
+        }
+
+        .filter-tags button {
+            font-size: 0.8rem;
+            padding: 4px 8px;
+            border-radius: 20px;
+        }
+
+        .filter-tags button.active {
+            background-color: var(--primary-color);
+            color: #fff;
+            border-color: var(--primary-color);
+        }
+
+        .song-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .song-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+        }
+
+        .song-item:hover {
+            background-color: var(--bg-color);
+        }
+
+        .song-item.active {
+            background-color: var(--active-bg);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .song-title {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 2px;
+        }
+
+        .song-artist {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .lyrics-panel {
+            flex: 1;
+            background-color: var(--bg-color);
+            padding: 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .lyrics-content {
+            width: 100%;
+            max-width: 700px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .lyrics-header {
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+            text-align: center;
+        }
+
+        .lyrics-header h2 {
+            font-size: 1.5rem;
+            margin-bottom: 4px;
+        }
+
+        .lyrics-header p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .lyrics-body {
+            font-size: var(--font-size);
+            line-height: 1.8;
+            white-space: pre-wrap;
+            text-align: center;
+        }
+
+        .empty-state {
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        /* Responsive สำหรับมือถือ */
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                height: 45vh;
+            }
+            .lyrics-panel {
+                height: 55vh;
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body data-theme="dark">
+
+    <header>
+        <h1>🎵 Lyrics App</h1>
+        <div class="controls">
+            <button onclick="adjustFontSize(-1)">A-</button>
+            <button onclick="adjustFontSize(1)">A+</button>
+            <button id="themeToggleBtn" onclick="toggleTheme()">☀️ โหมดสว่าง</button>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <!-- แผงรายชื่อเพลงและค้นหา -->
+        <div class="sidebar">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="🔍 ค้นหาชื่อเพลง, ศิลปิน..." oninput="filterSongs()">
+            </div>
+            <div class="filter-tags" id="filterTags">
+                <button class="active" onclick="filterByCategory('All', this)">ทั้งหมด</button>
+            </div>
+            <div class="song-list" id="songList">
+                <!-- รายการเพลงจะถูกสร้างด้วย JS -->
+            </div>
+        </div>
+
+        <!-- แผงแสดงเนื้อเพลง -->
+        <div class="lyrics-panel" id="lyricsPanel">
+            <div class="empty-state">
+                <p>👈 กรุณาเลือกเพลงจากรายการทางซ้าย</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ข้อมูลตัวอย่างเพลง (คุณสามารถเพิ่มเพลง ศิลปิน และอัลบั้มตรงนี้ได้เลย)
+        const songs = [
+            {
+                id: 1,
+                title: "เพลงตัวอย่างที่ 1",
+                artist: "Artist A",
+                album: "Album One",
+                lyrics: `(Verse 1)
+นี่คือเนื้อเพลงบรรทัดแรก
+ร้องตามกันได้เลยนะ
+ใส่คอร์ดหรือโน้ตย่อก็ได้
+
+(Chorus)
+ท่อนฮุกติดหู วนไปวนมา
+ดนตรีสดกำลังมา อารมณ์มาเต็ม
+เปิดดูจากมือถือ สะดวกสุดๆ ไปเลย!`
+            },
+            {
+                id: 2,
+                title: "เพลงตัวอย่างที่ 2",
+                artist: "Artist B",
+                album: "Album Two",
+                lyrics: `(Verse 1)
+อีกหนึ่งเพลงในลิสต์
+จัดหมวดหมู่ตามอัลบั้มได้เรียบร้อย
+
+(Chorus)
+ปรับขนาดฟอนต์ได้ตามใจชอบ
+ไม่ว่าจะมองใกล้หรือมองไกลก็ชัดเจน!`
+            },
+            {
+                id: 3,
+                title: "เพลงตัวอย่างที่ 3",
+                artist: "Artist A",
+                album: "Album One",
+                lyrics: `(Intro)
+โซโล่กีตาร์เท่ๆ
+
+(Verse 1)
+เพลงนี้ศิลปินคนเดียวกันกับเพลงแรก
+จัดกลุ่มตามศิลปินได้ง่ายๆ`
+            }
+        ];
+
+        let currentFontSize = 16;
+        let selectedCategory = 'All';
+
+        // เริ่มต้นทำงาน
+        window.onload = function() {
+            renderCategories();
+            renderSongList(songs);
+        };
+
+        // เรนเดอร์ปุ่มหมวดหมู่ศิลปิน/อัลบั้ม
+        function renderCategories() {
+            const filterTags = document.getElementById('filterTags');
+            // ดึงรายชื่อศิลปินไม่ให้ซ้ำกัน
+            const artists = [...new Set(songs.map(s => s.artist))];
+            
+            artists.forEach(artist => {
+                const btn = document.createElement('button');
+                btn.innerText = artist;
+                btn.onclick = (e) => filterByCategory(artist, e.target);
+                filterTags.appendChild(btn);
+            });
+        }
+
+        // กรองเพลงตามศิลปิน/หมวดหมู่
+        function filterByCategory(category, btnElement) {
+            selectedCategory = category;
+            
+            // สลับสถานะปุ่ม Active
+            document.querySelectorAll('.filter-tags button').forEach(b => b.classList.remove('active'));
+            btnElement.classList.add('active');
+
+            filterSongs();
+        }
+
+        // ค้นหาและกรองเพลงรวมกัน
+        function filterSongs() {
+            const keyword = document.getElementById('searchInput').value.toLowerCase();
+            
+            const filtered = songs.filter(song => {
+                const matchCategory = (selectedCategory === 'All' || song.artist === selectedCategory);
+                const matchKeyword = song.title.toLowerCase().includes(keyword) || 
+                                     song.artist.toLowerCase().includes(keyword) || 
+                                     song.album.toLowerCase().includes(keyword);
+                return matchCategory && matchKeyword;
+            });
+
+            renderSongList(filtered);
+        }
+
+        // แสดงรายชื่อเพลง
+        function renderSongList(songArray) {
+            const songListEl = document.getElementById('songList');
+            songListEl.innerHTML = '';
+
+            if (songArray.length === 0) {
+                songListEl.innerHTML = '<div style="padding: 16px; color: var(--text-muted); text-align: center;">ไม่พบเพลงที่ค้นหา</div>';
+                return;
+            }
+
+            songArray.forEach(song => {
+                const item = document.createElement('div');
+                item.className = 'song-item';
+                item.id = `song-item-${song.id}`;
+                item.innerHTML = `
+                    <div class="song-title">${song.title}</div>
+                    <div class="song-artist">${song.artist} • <span style="color: var(--primary-color);">${song.album}</span></div>
+                `;
+                item.onclick = () => selectSong(song.id);
+                songListEl.appendChild(item);
+            });
+        }
+
+        // เลือกเพลงมาแสดงเนื้อหา
+        function selectSong(id) {
+            // ไฮไลต์แถวที่เลือก
+            document.querySelectorAll('.song-item').forEach(el => el.classList.remove('active'));
+            const activeItem = document.getElementById(`song-item-${id}`);
+            if (activeItem) activeItem.classList.add('active');
+
+            const song = songs.find(s => s.id === id);
+            if (!song) return;
+
+            const panel = document.getElementById('lyricsPanel');
+            panel.innerHTML = `
+                <div class="lyrics-content">
+                    <div class="lyrics-header">
+                        <h2>${song.title}</h2>
+                        <p>ศิลปิน: ${song.artist} | อัลบั้ม: ${song.album}</p>
+                    </div>
+                    <div class="lyrics-body" id="lyricsBody">${song.lyrics}</div>
+                </div>
+            `;
+        }
+
+        // ปรับขนาดตัวอักษร
+        function adjustFontSize(delta) {
+            currentFontSize += delta;
+            if (currentFontSize < 12) currentFontSize = 12;
+            if (currentFontSize > 28) currentFontSize = 28;
+            
+            document.documentElement.style.setProperty('--font-size', currentFontSize + 'px');
+        }
+
+        // สลับโหมดมืด / สว่าง
+        function toggleTheme() {
+            const body = document.body;
+            const btn = document.getElementById('themeToggleBtn');
+            const currentTheme = body.getAttribute('data-theme');
+
+            if (currentTheme === 'dark') {
+                body.setAttribute('data-theme', 'light');
+                btn.innerText = '🌙 โหมดมืด';
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                btn.innerText = '☀️ โหมดสว่าง';
+            }
+        }
+    </script>
+</body>
+</html>
