@@ -239,7 +239,8 @@
             flex: 1;
             background-color: var(--bg-color);
             padding: 24px;
-            overflow-y: auto;
+            overflow-y: auto; /* ให้ panel หลักเลื่อนขึ้นลงได้อิสระ */
+            -webkit-overflow-scrolling: touch;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -256,7 +257,6 @@
             text-align: center;
             display: flex;
             flex-direction: column;
-            height: 100%;
         }
 
         .lyrics-header {
@@ -293,23 +293,21 @@
 
         .lyrics-image-container {
             width: 100%;
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: auto;
             background: rgba(0,0,0,0.015);
             border-radius: 10px;
             padding: 12px;
             border: 1px dashed var(--border-color);
+            display: flex;
+            justify-content: center;
         }
 
         .lyrics-image {
-            max-width: 100%;
-            max-height: 100%;
+            width: 100%;
+            height: auto; /* ปรับความสูงตามสัดส่วนภาพจริง เพื่อให้รูปไม่ถูกบีบและเลื่อนจอทัชสกรีนได้ปกติ */
             object-fit: contain;
             border-radius: 6px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            touch-action: pan-y; /* อนุญาตให้ใช้นิ้วเลื่อนขึ้นลงบนรูปได้บนมือถือ/แท็บเล็ต */
         }
 
         .empty-state {
@@ -510,7 +508,6 @@
             panel.innerHTML = `
                 <div class="lyrics-content">
                     <div class="lyrics-header">
-                        <!-- ย้ายปุ่ม เมนูเพลง มาไว้ทางซ้ายคู่กับชื่อเพลงแล้ว -->
                         <div class="lyrics-header-left">
                             <button onclick="toggleSidebar()">📋 เมนูเพลง</button>
                             <div class="lyrics-header-info">
