@@ -154,9 +154,6 @@
             padding: 12px 16px;
             border-bottom: 1px solid var(--border-color);
             cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
 
         .song-item:hover {
@@ -168,10 +165,6 @@
             border-left: 4px solid var(--primary-color);
         }
 
-        .song-info {
-            flex: 1;
-        }
-
         .song-title {
             font-weight: 600;
             font-size: 1rem;
@@ -181,18 +174,6 @@
         .song-artist {
             font-size: 0.85rem;
             color: var(--text-muted);
-        }
-
-        /* สไตล์สำหรับแสดง Key เพลงสีแดงเด่นชัด */
-        .song-key {
-            font-weight: 700;
-            font-size: 0.9rem;
-            color: #ff4d4d;
-            background: rgba(255, 77, 77, 0.1);
-            padding: 4px 8px;
-            border-radius: 6px;
-            margin-left: 8px;
-            flex-shrink: 0;
         }
 
         .lyrics-panel {
@@ -302,7 +283,7 @@
                 <button onclick="toggleSidebar()" style="padding: 4px 8px; font-size: 0.8rem;">◀ ซ่อนเมนู</button>
             </div>
             <div class="search-box">
-                <input type="text" id="searchInput" placeholder="🔍 ค้นหาชื่อเพลง, ศิลปิน, อัลบั้ม, Key..." oninput="filterSongs()">
+                <input type="text" id="searchInput" placeholder="🔍 ค้นหาชื่อเพลง, ศิลปิน, อัลบั้ม..." oninput="filterSongs()">
             </div>
             <div class="filter-tags" id="filterTags">
                 <button class="active" onclick="filterByCategory('All', this)">ทั้งหมด</button>
@@ -310,7 +291,7 @@
             <div class="song-list" id="songList"></div>
         </div>
 
-        <!-- แผงแสดงรูปภาพเนื้อเพลง -->
+        <!-- แผงแสดงรูปภาพเนื้อเพลง (หน้าแรกจะแสดงข้อความต้อนรับให้เลือกเพลง) -->
         <div class="lyrics-panel" id="lyricsPanel">
             <div class="empty-state">
                 <p>👈 กรุณาเลือกเพลงจากเมนูด้านซ้ายเพื่อดูเนื้อเพลง</p>
@@ -319,14 +300,12 @@
     </div>
 
     <script>
-        // เพิ่มคีย์เพลง (key) เข้าไปในข้อมูลแต่ละเพลงตรงนี้ได้เลยครับ
         const songs = [
             {
                 id: 1,
                 title: "ขึ้นใจ (3am call)",
                 artist: "Mirrr Ft. BLVCKHEART",
                 album: "Single",
-                key: "C",
                 image: "images/ขึ้นใจ.png"
             },
             {
@@ -334,7 +313,6 @@
                 title: "ชื่อเพลงที่ 2",
                 artist: "ชื่อศิลปิน B",
                 album: "ชื่ออัลบั้ม 2",
-                key: "G",
                 image: "images/song2.jpg"
             },
             {
@@ -342,7 +320,6 @@
                 title: "ชื่อเพลงที่ 3",
                 artist: "ชื่อศิลปิน A",
                 album: "ชื่ออัลบั้ม 1",
-                key: "Am",
                 image: "images/song3.jpg"
             }
         ];
@@ -352,6 +329,7 @@
         window.onload = function() {
             renderCategories();
             renderSongList(songs);
+            // ไม่ต้องเลือกเพลงอัตโนมัติ ปล่อยให้แสดงหน้าแรกต้อนรับและเปิดเมนูด้านซ้ายไว้
         };
 
         function renderCategories() {
@@ -380,8 +358,7 @@
                 const matchCategory = (selectedCategory === 'All' || song.artist === selectedCategory);
                 const matchKeyword = song.title.toLowerCase().includes(keyword) || 
                                      song.artist.toLowerCase().includes(keyword) || 
-                                     song.album.toLowerCase().includes(keyword) ||
-                                     song.key.toLowerCase().includes(keyword);
+                                     song.album.toLowerCase().includes(keyword);
                 return matchCategory && matchKeyword;
             });
 
@@ -402,14 +379,12 @@
                 item.className = 'song-item';
                 item.id = `song-item-${song.id}`;
                 item.innerHTML = `
-                    <div class="song-info">
-                        <div class="song-title">${song.title}</div>
-                        <div class="song-artist">${song.artist} • <span style="color: var(--primary-color);">${song.album}</span></div>
-                    </div>
-                    <div class="song-key">Key : ${song.key}</div>
+                    <div class="song-title">${song.title}</div>
+                    <div class="song-artist">${song.artist} • <span style="color: var(--primary-color);">${song.album}</span></div>
                 `;
                 item.onclick = () => {
                     selectSong(song.id);
+                    // พอกดเลือกเพลง เมนูด้านซ้ายจะหุบหายไปเพื่อให้จอเนื้อเพลงใหญ่เต็มตา
                     const sidebar = document.getElementById('sidebar');
                     if (!sidebar.classList.contains('hidden')) {
                         toggleSidebar();
@@ -433,7 +408,7 @@
                     <div class="lyrics-header">
                         <button onclick="toggleSidebar()" style="padding: 6px 10px; font-size: 0.85rem;">📋 เลือกเพลงอื่น</button>
                         <div class="lyrics-header-info" style="flex: 1; margin-left: 12px;">
-                            <h2>${song.title} <span style="color: #ff4d4d; font-size: 1.1rem;">(Key : ${song.key})</span></h2>
+                            <h2>${song.title}</h2>
                             <p>ศิลปิน: ${song.artist} | อัลบั้ม: ${song.album}</p>
                         </div>
                     </div>
