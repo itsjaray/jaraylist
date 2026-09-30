@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lyrics App - คลังเนื้อเพลง</title>
+    <title>My Lyrics & Chords App</title>
     <style>
         :root {
             --bg-color: #f8f9fa;
@@ -12,9 +12,7 @@
             --text-muted: #6c757d;
             --border-color: #dee2e6;
             --primary-color: #0d6efd;
-            --primary-hover: #0b5ed7;
             --active-bg: #e7f1ff;
-            --font-size: 16px;
         }
 
         [data-theme="dark"] {
@@ -24,7 +22,6 @@
             --text-muted: #a0a0a0;
             --border-color: #333333;
             --primary-color: #bb86fc;
-            --primary-hover: #3700b3;
             --active-bg: #2d2438;
         }
 
@@ -70,7 +67,7 @@
             background: var(--card-bg);
             color: var(--text-color);
             border: 1px solid var(--border-color);
-            padding: 6px 10px;
+            padding: 6px 12px;
             border-radius: 6px;
             cursor: pointer;
             font-size: 0.9rem;
@@ -122,7 +119,7 @@
 
         .filter-tags button {
             font-size: 0.8rem;
-            padding: 4px 8px;
+            padding: 4px 10px;
             border-radius: 20px;
         }
 
@@ -175,36 +172,48 @@
 
         .lyrics-content {
             width: 100%;
-            max-width: 700px;
+            max-width: 800px;
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
-            padding: 24px;
+            padding: 20px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-        }
-
-        .lyrics-header {
-            margin-bottom: 20px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 12px;
             text-align: center;
         }
 
+        .lyrics-header {
+            margin-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+        }
+
         .lyrics-header h2 {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             margin-bottom: 4px;
         }
 
         .lyrics-header p {
             color: var(--text-muted);
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
 
-        .lyrics-body {
-            font-size: var(--font-size);
-            line-height: 1.8;
-            white-space: pre-wrap;
-            text-align: center;
+        /* ส่วนแสดงรูปภาพเนื้อเพลง */
+        .lyrics-image-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            overflow: auto;
+            background: rgba(0,0,0,0.02);
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .lyrics-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+            cursor: zoom-in;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
         .empty-state {
@@ -213,17 +222,16 @@
             margin-top: 50px;
         }
 
-        /* Responsive สำหรับมือถือ */
         @media (max-width: 768px) {
             .main-container {
                 flex-direction: column;
             }
             .sidebar {
                 width: 100%;
-                height: 45vh;
+                height: 40vh;
             }
             .lyrics-panel {
-                height: 55vh;
+                height: 60vh;
                 padding: 12px;
             }
         }
@@ -232,10 +240,8 @@
 <body data-theme="dark">
 
     <header>
-        <h1>🎵 Lyrics App</h1>
+        <h1>🎵 My Lyrics Vault</h1>
         <div class="controls">
-            <button onclick="adjustFontSize(-1)">A-</button>
-            <button onclick="adjustFontSize(1)">A+</button>
             <button id="themeToggleBtn" onclick="toggleTheme()">☀️ โหมดสว่าง</button>
         </div>
     </header>
@@ -244,82 +250,60 @@
         <!-- แผงรายชื่อเพลงและค้นหา -->
         <div class="sidebar">
             <div class="search-box">
-                <input type="text" id="searchInput" placeholder="🔍 ค้นหาชื่อเพลง, ศิลปิน..." oninput="filterSongs()">
+                <input type="text" id="searchInput" placeholder="🔍 ค้นหาชื่อเพลง, ศิลปิน, อัลบั้ม..." oninput="filterSongs()">
             </div>
             <div class="filter-tags" id="filterTags">
                 <button class="active" onclick="filterByCategory('All', this)">ทั้งหมด</button>
             </div>
-            <div class="song-list" id="songList">
-                <!-- รายการเพลงจะถูกสร้างด้วย JS -->
-            </div>
+            <div class="song-list" id="songList"></div>
         </div>
 
-        <!-- แผงแสดงเนื้อเพลง -->
+        <!-- แผงแสดงรูปภาพเนื้อเพลง -->
         <div class="lyrics-panel" id="lyricsPanel">
             <div class="empty-state">
-                <p>👈 กรุณาเลือกเพลงจากรายการทางซ้าย</p>
+                <p>👈 กรุณาเลือกเพลงจากรายการด้านซ้ายเพื่อดูรูปเนื้อเพลง</p>
             </div>
         </div>
     </div>
 
     <script>
-        // ข้อมูลตัวอย่างเพลง (คุณสามารถเพิ่มเพลง ศิลปิน และอัลบั้มตรงนี้ได้เลย)
+        // ==========================================
+        // รายชื่อเพลงและลิงก์รูปภาพของคุณ
+        // ==========================================
         const songs = [
             {
                 id: 1,
-                title: "เพลงตัวอย่างที่ 1",
-                artist: "Artist A",
-                album: "Album One",
-                lyrics: `(Verse 1)
-นี่คือเนื้อเพลงบรรทัดแรก
-ร้องตามกันได้เลยนะ
-ใส่คอร์ดหรือโน้ตย่อก็ได้
-
-(Chorus)
-ท่อนฮุกติดหู วนไปวนมา
-ดนตรีสดกำลังมา อารมณ์มาเต็ม
-เปิดดูจากมือถือ สะดวกสุดๆ ไปเลย!`
+                title: "ชื่อเพลงที่ 1",
+                artist: "ชื่อศิลปิน A",
+                album: "ชื่ออัลบั้ม 1",
+                image: "images/song1.jpg" // ชี้ไปที่ไฟล์รูปภาพในโฟลเดอร์ของคุณ
             },
             {
                 id: 2,
-                title: "เพลงตัวอย่างที่ 2",
-                artist: "Artist B",
-                album: "Album Two",
-                lyrics: `(Verse 1)
-อีกหนึ่งเพลงในลิสต์
-จัดหมวดหมู่ตามอัลบั้มได้เรียบร้อย
-
-(Chorus)
-ปรับขนาดฟอนต์ได้ตามใจชอบ
-ไม่ว่าจะมองใกล้หรือมองไกลก็ชัดเจน!`
+                title: "ชื่อเพลงที่ 2",
+                artist: "ชื่อศิลปิน B",
+                album: "ชื่ออัลบั้ม 2",
+                image: "images/song2.jpg"
             },
             {
                 id: 3,
-                title: "เพลงตัวอย่างที่ 3",
-                artist: "Artist A",
-                album: "Album One",
-                lyrics: `(Intro)
-โซโล่กีตาร์เท่ๆ
-
-(Verse 1)
-เพลงนี้ศิลปินคนเดียวกันกับเพลงแรก
-จัดกลุ่มตามศิลปินได้ง่ายๆ`
+                title: "ชื่อเพลงที่ 3",
+                artist: "ชื่อศิลปิน A",
+                album: "ชื่ออัลบั้ม 1",
+                image: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800" // ตัวอย่างกรณีดึงจากลิงก์ภายนอก
             }
         ];
 
-        let currentFontSize = 16;
         let selectedCategory = 'All';
 
-        // เริ่มต้นทำงาน
         window.onload = function() {
             renderCategories();
             renderSongList(songs);
         };
 
-        // เรนเดอร์ปุ่มหมวดหมู่ศิลปิน/อัลบั้ม
+        // สร้างปุ่มหมวดหมู่ศิลปินอัตโนมัติ
         function renderCategories() {
             const filterTags = document.getElementById('filterTags');
-            // ดึงรายชื่อศิลปินไม่ให้ซ้ำกัน
             const artists = [...new Set(songs.map(s => s.artist))];
             
             artists.forEach(artist => {
@@ -330,18 +314,15 @@
             });
         }
 
-        // กรองเพลงตามศิลปิน/หมวดหมู่
+        // กรองตามศิลปิน
         function filterByCategory(category, btnElement) {
             selectedCategory = category;
-            
-            // สลับสถานะปุ่ม Active
             document.querySelectorAll('.filter-tags button').forEach(b => b.classList.remove('active'));
             btnElement.classList.add('active');
-
             filterSongs();
         }
 
-        // ค้นหาและกรองเพลงรวมกัน
+        // ค้นหาเพลง
         function filterSongs() {
             const keyword = document.getElementById('searchInput').value.toLowerCase();
             
@@ -356,7 +337,7 @@
             renderSongList(filtered);
         }
 
-        // แสดงรายชื่อเพลง
+        // แสดงรายชื่อเพลงใน Sidebar
         function renderSongList(songArray) {
             const songListEl = document.getElementById('songList');
             songListEl.innerHTML = '';
@@ -379,9 +360,8 @@
             });
         }
 
-        // เลือกเพลงมาแสดงเนื้อหา
+        // เลือกเพลงมาแสดงรูปเนื้อเพลง
         function selectSong(id) {
-            // ไฮไลต์แถวที่เลือก
             document.querySelectorAll('.song-item').forEach(el => el.classList.remove('active'));
             const activeItem = document.getElementById(`song-item-${id}`);
             if (activeItem) activeItem.classList.add('active');
@@ -396,18 +376,12 @@
                         <h2>${song.title}</h2>
                         <p>ศิลปิน: ${song.artist} | อัลบั้ม: ${song.album}</p>
                     </div>
-                    <div class="lyrics-body" id="lyricsBody">${song.lyrics}</div>
+                    <div class="lyrics-image-container">
+                        <img src="${song.image}" alt="${song.title}" class="lyrics-image" onclick="window.open('${song.image}', '_blank')" title="คลิกเพื่อดูภาพขนาดเต็ม">
+                    </div>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 8px;">💡 คลิกที่รูปภาพเพื่อเปิดดูภาพขนาดเต็ม</p>
                 </div>
             `;
-        }
-
-        // ปรับขนาดตัวอักษร
-        function adjustFontSize(delta) {
-            currentFontSize += delta;
-            if (currentFontSize < 12) currentFontSize = 12;
-            if (currentFontSize > 28) currentFontSize = 28;
-            
-            document.documentElement.style.setProperty('--font-size', currentFontSize + 'px');
         }
 
         // สลับโหมดมืด / สว่าง
