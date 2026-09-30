@@ -154,6 +154,9 @@
             padding: 12px 16px;
             border-bottom: 1px solid var(--border-color);
             cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .song-item:hover {
@@ -165,6 +168,10 @@
             border-left: 4px solid var(--primary-color);
         }
 
+        .song-info {
+            flex: 1;
+        }
+
         .song-title {
             font-weight: 600;
             font-size: 1rem;
@@ -174,6 +181,17 @@
         .song-artist {
             font-size: 0.85rem;
             color: var(--text-muted);
+        }
+
+        .song-key {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #ff4d4d;
+            background: rgba(255, 77, 77, 0.1);
+            padding: 4px 8px;
+            border-radius: 6px;
+            margin-left: 8px;
+            flex-shrink: 0;
         }
 
         .lyrics-panel {
@@ -283,7 +301,7 @@
                 <button onclick="toggleSidebar()" style="padding: 4px 8px; font-size: 0.8rem;">◀ ซ่อนเมนู</button>
             </div>
             <div class="search-box">
-                <input type="text" id="searchInput" placeholder="🔍 ค้นหาชื่อเพลง, ศิลปิน, อัลบั้ม..." oninput="filterSongs()">
+                <input type="text" id="searchInput" placeholder="🔍 ค้นหาชื่อเพลง, ศิลปิน, Key..." oninput="filterSongs()">
             </div>
             <div class="filter-tags" id="filterTags">
                 <button class="active" onclick="filterByCategory('All', this)">ทั้งหมด</button>
@@ -291,7 +309,7 @@
             <div class="song-list" id="songList"></div>
         </div>
 
-        <!-- แผงแสดงรูปภาพเนื้อเพลง (หน้าแรกจะแสดงข้อความต้อนรับให้เลือกเพลง) -->
+        <!-- แผงแสดงรูปภาพเนื้อเพลง -->
         <div class="lyrics-panel" id="lyricsPanel">
             <div class="empty-state">
                 <p>👈 กรุณาเลือกเพลงจากเมนูด้านซ้ายเพื่อดูเนื้อเพลง</p>
@@ -300,36 +318,56 @@
     </div>
 
     <script>
-        const songs = [
-            {
-                id: 1,
-                title: "ขึ้นใจ (3am call)",
-                artist: "Mirrr Ft. BLVCKHEART",
-                album: "Single",
-                image: "images/ขึ้นใจ.png"
-            },
-            {
-                id: 2,
-                title: "ชื่อเพลงที่ 2",
-                artist: "ชื่อศิลปิน B",
-                album: "ชื่ออัลบั้ม 2",
-                image: "images/song2.jpg"
-            },
-            {
-                id: 3,
-                title: "ชื่อเพลงที่ 3",
-                artist: "ชื่อศิลปิน A",
-                album: "ชื่ออัลบั้ม 1",
-                image: "images/song3.jpg"
-            }
+        // 📌 ตรงนี้ใส่แค่ "ชื่อไฟล์รูปภาพ" ในโฟลเดอร์ images/ เท่านั้น! 
+        // ระบบจะแกะชื่อเพลง ศิลปิน และ Key จากชื่อไฟล์ให้อัตโนมัติทันที
+        const imageFiles = [
+            "ขึ้นใจ (3am call) - Mirrr Ft. BLVCKHEART (Key C).png",
+            "ชื่อเพลงที่ 2 - ศิลปิน B - อัลบั้ม 2 (Key G).jpg",
+            "ชื่อเพลงที่ 3 - ศิลปิน A - อัลบั้ม 1 (Key Am).jpg"
         ];
 
+        let songs = [];
         let selectedCategory = 'All';
 
+        // ฟังก์ชันแปลงชื่อไฟล์ให้เป็นข้อมูลเพลงอัตโนมัติ
+        function parseSongsFromFilenames() {
+            songs = imageFiles.map((filename, index) => {
+                // ตัดนามสกุลไฟล์ออก (.png, .jpg ฯลฯ)
+                let nameWithoutExt = filename.substring(0, filename.lastIndexOf('.')) || filename;
+                
+                let title = nameWithoutExt;
+                let artist = "Unknown Artist";
+                let album = "Single";
+                let key = "-";
+
+                // ดึง Key จากวงเล็บท้ายชื่อ เช่น (Key C) หรือ (Key Am)
+                const keyMatch = nameWithoutExt.match(/\(Key\s*([^)]+)\)/i);
+                if (keyMatch) {
+                    key = keyMatch[1].trim();
+                    nameWithoutExt = nameWithoutExt.replace(keyMatch[0], '').trim();
+                }
+
+                // แยกด้วยเครื่องหมายขีด (-) ระหว่าง ชื่อเพลง - ศิลปิน - อัลบั้ม
+                let parts = nameWithoutExt.split('-').map(p => p.trim());
+                if (parts.length >= 1) title = parts[0];
+                if (parts.length >= 2) artist = parts[1];
+                if (parts.length >= 3) album = parts[2];
+
+                return {
+                    id: index + 1,
+                    title: title,
+                    artist: artist,
+                    album: album,
+                    key: key,
+                    image: `images/${filename}`
+                };
+            });
+        }
+
         window.onload = function() {
+            parseSongsFromFilenames();
             renderCategories();
             renderSongList(songs);
-            // ไม่ต้องเลือกเพลงอัตโนมัติ ปล่อยให้แสดงหน้าแรกต้อนรับและเปิดเมนูด้านซ้ายไว้
         };
 
         function renderCategories() {
@@ -358,7 +396,8 @@
                 const matchCategory = (selectedCategory === 'All' || song.artist === selectedCategory);
                 const matchKeyword = song.title.toLowerCase().includes(keyword) || 
                                      song.artist.toLowerCase().includes(keyword) || 
-                                     song.album.toLowerCase().includes(keyword);
+                                     song.album.toLowerCase().includes(keyword) ||
+                                     song.key.toLowerCase().includes(keyword);
                 return matchCategory && matchKeyword;
             });
 
@@ -379,12 +418,14 @@
                 item.className = 'song-item';
                 item.id = `song-item-${song.id}`;
                 item.innerHTML = `
-                    <div class="song-title">${song.title}</div>
-                    <div class="song-artist">${song.artist} • <span style="color: var(--primary-color);">${song.album}</span></div>
+                    <div class="song-info">
+                        <div class="song-title">${song.title}</div>
+                        <div class="song-artist">${song.artist} • <span style="color: var(--primary-color);">${song.album}</span></div>
+                    </div>
+                    <div class="song-key">Key : ${song.key}</div>
                 `;
                 item.onclick = () => {
                     selectSong(song.id);
-                    // พอกดเลือกเพลง เมนูด้านซ้ายจะหุบหายไปเพื่อให้จอเนื้อเพลงใหญ่เต็มตา
                     const sidebar = document.getElementById('sidebar');
                     if (!sidebar.classList.contains('hidden')) {
                         toggleSidebar();
@@ -408,7 +449,7 @@
                     <div class="lyrics-header">
                         <button onclick="toggleSidebar()" style="padding: 6px 10px; font-size: 0.85rem;">📋 เลือกเพลงอื่น</button>
                         <div class="lyrics-header-info" style="flex: 1; margin-left: 12px;">
-                            <h2>${song.title}</h2>
+                            <h2>${song.title} <span style="color: #ff4d4d; font-size: 1.1rem;">(Key : ${song.key})</span></h2>
                             <p>ศิลปิน: ${song.artist} | อัลบั้ม: ${song.album}</p>
                         </div>
                     </div>
