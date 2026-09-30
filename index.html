@@ -469,7 +469,7 @@
                 let nameWithoutExt = filename.substring(0, filename.lastIndexOf('.')) || filename;
                 
                 let title = nameWithoutExt;
-                let artist = ""; // กำหนดให้ศิลปินว่างไว้ก่อนสำหรับ Medley
+                let artist = "Unknown Artist";
                 let album = "Single";
                 let key = "-";
 
@@ -483,7 +483,7 @@
                 // 2. เช็คว่าเป็น Medley หรือไม่
                 if (nameWithoutExt.toLowerCase().startsWith('medley')) {
                     album = "Medley";
-                    artist = "Medley"; // ให้เป็น Medley เพื่อเอาไว้ทำปุ่ม Filter ด้านบน
+                    artist = "Medley"; // กำหนดให้ศิลปินเป็น Medley ด้วย เพื่อให้ปุ่ม Filter แสดงผลคำว่า Medley ไม่ว่างเปล่า
                     title = nameWithoutExt;
                 } else {
                     // เพลงปกติ แยกด้วยขีด (-)
@@ -571,7 +571,7 @@
                 item.innerHTML = `
                     <div class="song-info">
                         <div class="song-title">${song.title}</div>
-                        <div class="song-artist">${song.artist && song.artist !== "Medley" ? song.artist + ' • ' : ''}${song.album}
+                        <div class="song-artist">${song.artist} • <span style="color: var(--primary-color);">${song.album}</span></div>
                     </div>
                     <div class="song-key">${song.key}</div>
                 `;
