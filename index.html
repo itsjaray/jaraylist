@@ -340,7 +340,8 @@
             align-items: flex-start;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
-            cursor: pointer; /* เปลี่ยนเมาส์เป็นรูปมือบอกว่ากดปิดได้ */
+            /* ป้องกันไม่ให้การสัมผัสทะลุไปถึงหน้าจอหลัก */
+            overscroll-behavior: contain;
         }
 
         .image-modal.active {
@@ -363,9 +364,9 @@
             height: auto;
             object-fit: contain;
             border-radius: 8px;
-            touch-action: auto; /* เปิดให้ซูมได้ปกติ */
+            /* อนุญาตให้ซูมเฉพาะรูปภาพได้ แต่บล็อกการซูมหน้าจอส่วนเกิน */
+            touch-action: pinch-zoom pan-x pan-y; 
         }
-
         .empty-state {
             color: var(--text-muted);
             text-align: center;
@@ -420,10 +421,10 @@
         </div>
     </div>
 
-    <!-- Modal สำหรับขยายรูปและซูม (แตะตรงไหนก็ได้เพื่อปิด) -->
+    <!-- Modal สำหรับขยายรูปและซูม -->
     <div class="image-modal" id="imageModal" onclick="closeImageModal()">
         <div class="modal-content-wrapper">
-            <img id="modalImg" src="" alt="Zoomed Lyrics">
+            <img id="modalImg" src="" alt="Zoomed Lyrics" onclick="event.stopPropagation()">
         </div>
     </div>
 
@@ -635,11 +636,13 @@
             const modalImg = document.getElementById('modalImg');
             modalImg.src = imgSrc;
             modal.classList.add('active');
+            document.body.style.overflow = 'hidden'; // ล็อกหน้าจอหลักไม่ให้เลื่อนหรือซูมตาม
         }
 
         function closeImageModal() {
             const modal = document.getElementById('imageModal');
             modal.classList.remove('active');
+            document.body.style.overflow = ''; // คืนค่าหน้าจอหลักให้กลับมาปกติ
         }
 
         function toggleSidebar() {
