@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Lyrics & Chords App</title>
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #212529;
+            --text-muted: #6c757d;
+            --border-color: #dee2e6;
+            --primary-color: #0d6efd;
+            --active-bg: #e7f1ff;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --text-muted: #a0a0a0;
+            --border-color: #333333;
+            --primary-color: #bb86fc;
+            --active-bg: #2d2438;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        header {
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        h1 {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        button {
+            background: var(--card-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        button:active {
+            opacity: 0.7;
+        }
+
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 350px;
+            background-color: var(--card-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .search-box {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 8px 12px;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        .filter-tags {
+            display: flex;
+            gap: 6px;
+            padding: 8px 12px;
+            overflow-x: auto;
+            border-bottom: 1px solid var(--border-color);
+            white-space: nowrap;
+        }
+
+        .filter-tags button {
+            font-size: 0.8rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
+        .filter-tags button.active {
+            background-color: var(--primary-color);
+            color: #fff;
+            border-color: var(--primary-color);
+        }
+
+        .song-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .song-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+        }
+
+        .song-item:hover {
+            background-color: var(--bg-color);
+        }
+
+        .song-item.active {
+            background-color: var(--active-bg);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .song-title {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 2px;
+        }
+
+        .song-artist {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .lyrics-panel {
+            flex: 1;
+            background-color: var(--bg-color);
+            padding: 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .lyrics-content {
+            width: 100%;
+            max-width: 800px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            text-align: center;
+        }
+
+        .lyrics-header {
+            margin-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+        }
+
+        .lyrics-header h2 {
+            font-size: 1.4rem;
+            margin-bottom: 4px;
+        }
+
+        .lyrics-header p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* ส่วนแสดงรูปภาพเนื้อเพลง */
+        .lyrics-image-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            overflow: auto;
+            background: rgba(0,0,0,0.02);
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .lyrics-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+            cursor: zoom-in;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .empty-state {
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                height: 40vh;
+            }
+            .lyrics-panel {
+                height: 60vh;
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body data-theme="dark">
+
+    <header>
+        <h1>🎵 My Lyrics Vault</h1>
+        <div class="controls">
+            <button id="themeToggleBtn" onclick="toggleTheme()">☀️ โหมดสว่าง</button>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <!-- แผงรายชื่อเพลงและค้นหา -->
+        <div class="sidebar">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="🔍 ค้นหาชื่อเพลง, ศิลปิน, อัลบั้ม..." oninput="filterSongs()">
+            </div>
+            <div class="filter-tags" id="filterTags">
+                <button class="active" onclick="filterByCategory('All', this)">ทั้งหมด</button>
+            </div>
+            <div class="song-list" id="songList"></div>
+        </div>
+
+        <!-- แผงแสดงรูปภาพเนื้อเพลง -->
+        <div class="lyrics-panel" id="lyricsPanel">
+            <div class="empty-state">
+                <p>👈 กรุณาเลือกเพลงจากรายการด้านซ้ายเพื่อดูรูปเนื้อเพลง</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // รายชื่อเพลงและลิงก์รูปภาพของคุณ
+        // ==========================================
+        const songs = [
+            {
+                id: 1,
+                title: "ชื่อเพลงที่ 1",
+                artist: "ชื่อศิลปิน A",
+                album: "ชื่ออัลบั้ม 1",
+                image: "images/song1.jpg" // ชี้ไปที่ไฟล์รูปภาพในโฟลเดอร์ของคุณ
+            },
+            {
+                id: 2,
+                title: "ชื่อเพลงที่ 2",
+                artist: "ชื่อศิลปิน B",
+                album: "ชื่ออัลบั้ม 2",
+                image: "images/song2.jpg"
+            },
+            {
+                id: 3,
+                title: "ชื่อเพลงที่ 3",
+                artist: "ชื่อศิลปิน A",
+                album: "ชื่ออัลบั้ม 1",
+                image: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800" // ตัวอย่างกรณีดึงจากลิงก์ภายนอก
+            }
+        ];
+
+        let selectedCategory = 'All';
+
+        window.onload = function() {
+            renderCategories();
+            renderSongList(songs);
+        };
+
+        // สร้างปุ่มหมวดหมู่ศิลปินอัตโนมัติ
+        function renderCategories() {
+            const filterTags = document.getElementById('filterTags');
+            const artists = [...new Set(songs.map(s => s.artist))];
+            
+            artists.forEach(artist => {
+                const btn = document.createElement('button');
+                btn.innerText = artist;
+                btn.onclick = (e) => filterByCategory(artist, e.target);
+                filterTags.appendChild(btn);
+            });
+        }
+
+        // กรองตามศิลปิน
+        function filterByCategory(category, btnElement) {
+            selectedCategory = category;
+            document.querySelectorAll('.filter-tags button').forEach(b => b.classList.remove('active'));
+            btnElement.classList.add('active');
+            filterSongs();
+        }
+
+        // ค้นหาเพลง
+        function filterSongs() {
+            const keyword = document.getElementById('searchInput').value.toLowerCase();
+            
+            const filtered = songs.filter(song => {
+                const matchCategory = (selectedCategory === 'All' || song.artist === selectedCategory);
+                const matchKeyword = song.title.toLowerCase().includes(keyword) || 
+                                     song.artist.toLowerCase().includes(keyword) || 
+                                     song.album.toLowerCase().includes(keyword);
+                return matchCategory && matchKeyword;
+            });
+
+            renderSongList(filtered);
+        }
+
+        // แสดงรายชื่อเพลงใน Sidebar
+        function renderSongList(songArray) {
+            const songListEl = document.getElementById('songList');
+            songListEl.innerHTML = '';
+
+            if (songArray.length === 0) {
+                songListEl.innerHTML = '<div style="padding: 16px; color: var(--text-muted); text-align: center;">ไม่พบเพลงที่ค้นหา</div>';
+                return;
+            }
+
+            songArray.forEach(song => {
+                const item = document.createElement('div');
+                item.className = 'song-item';
+                item.id = `song-item-${song.id}`;
+                item.innerHTML = `
+                    <div class="song-title">${song.title}</div>
+                    <div class="song-artist">${song.artist} • <span style="color: var(--primary-color);">${song.album}</span></div>
+                `;
+                item.onclick = () => selectSong(song.id);
+                songListEl.appendChild(item);
+            });
+        }
+
+        // เลือกเพลงมาแสดงรูปเนื้อเพลง
+        function selectSong(id) {
+            document.querySelectorAll('.song-item').forEach(el => el.classList.remove('active'));
+            const activeItem = document.getElementById(`song-item-${id}`);
+            if (activeItem) activeItem.classList.add('active');
+
+            const song = songs.find(s => s.id === id);
+            if (!song) return;
+
+            const panel = document.getElementById('lyricsPanel');
+            panel.innerHTML = `
+                <div class="lyrics-content">
+                    <div class="lyrics-header">
+                        <h2>${song.title}</h2>
+                        <p>ศิลปิน: ${song.artist} | อัลบั้ม: ${song.album}</p>
+                    </div>
+                    <div class="lyrics-image-container">
+                        <img src="${song.image}" alt="${song.title}" class="lyrics-image" onclick="window.open('${song.image}', '_blank')" title="คลิกเพื่อดูภาพขนาดเต็ม">
+                    </div>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 8px;">💡 คลิกที่รูปภาพเพื่อเปิดดูภาพขนาดเต็ม</p>
+                </div>
+            `;
+        }
+
+        // สลับโหมดมืด / สว่าง
+        function toggleTheme() {
+            const body = document.body;
+            const btn = document.getElementById('themeToggleBtn');
+            const currentTheme = body.getAttribute('data-theme');
+
+            if (currentTheme === 'dark') {
+                body.setAttribute('data-theme', 'light');
+                btn.innerText = '🌙 โหมดมืด';
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                btn.innerText = '☀️ โหมดสว่าง';
+            }
+        }
+    </script>
+</body>
+</html>
