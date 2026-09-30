@@ -385,7 +385,6 @@
                 let album = "Single";
                 let key = "-";
 
-                // ค้นหาคำว่า Key จากทุกวงเล็บแล้วเลือกเอา "อันสุดท้าย" (เพื่อข้ามวงเล็บชื่อเพลงอย่าง 3am call)
                 const matches = [...nameWithoutExt.matchAll(/\(([^)]+)\)/g)];
                 let lastKeyMatch = null;
                 for (let match of matches) {
@@ -397,9 +396,7 @@
 
                 if (lastKeyMatch) {
                     let content = lastKeyMatch[1].trim();
-                    // ตัดคำว่า Key ออก และลบเครื่องหมาย : หรือช่องว่างออกให้เหลือแต่ตัวโน้ต เช่น "C"
                     key = content.replace(/^key\s*[:\s]*/i, '').trim();
-                    // ลบวงเล็บ Key นั้นออกจากสตริงหลักเพื่อไม่ให้ซ้ำซ้อนในชื่อเพลง
                     nameWithoutExt = nameWithoutExt.replace(lastKeyMatch[0], '').trim();
                 }
 
@@ -518,6 +515,12 @@
                     </div>
                 </div>
             `;
+
+            // สั่งซ่อนเมนูด้านซ้ายอัตโนมัติเมื่อกดเลือกเพลง
+            const sidebar = document.getElementById('sidebar');
+            if (!sidebar.classList.contains('hidden')) {
+                sidebar.classList.add('hidden');
+            }
         }
 
         function toggleSidebar() {
