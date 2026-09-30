@@ -421,10 +421,10 @@
         </div>
     </div>
 
-    <!-- Modal สำหรับขยายรูปและซูม -->
+    <!-- Modal สำหรับขยายรูปและซูม (แตะตรงไหนก็ปิดได้) -->
     <div class="image-modal" id="imageModal" onclick="closeImageModal()">
         <div class="modal-content-wrapper">
-            <img id="modalImg" src="" alt="Zoomed Lyrics" onclick="event.stopPropagation()">
+            <img id="modalImg" src="" alt="Zoomed Lyrics">
         </div>
     </div>
 
@@ -631,19 +631,36 @@
             `;
         }
 
-        function openImageModal(imgSrc) {
-            const modal = document.getElementById('imageModal');
-            const modalImg = document.getElementById('modalImg');
-            modalImg.src = imgSrc;
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden'; // ล็อกหน้าจอหลักไม่ให้เลื่อนหรือซูมตาม
-        }
+        let isTouchMoved = false;
 
-        function closeImageModal() {
-            const modal = document.getElementById('imageModal');
-            modal.classList.remove('active');
-            document.body.style.overflow = ''; // คืนค่าหน้าจอหลักให้กลับมาปกติ
-        }
+// บันทึกสถานะว่าผู้ใช้นิ้วขยับหรือเลื่อนจออยู่ไหม
+document.getElementById('imageModal').addEventListener('touchmove', () => {
+    isTouchMoved = true;
+});
+
+document.getElementById('imageModal').addEventListener('touchstart', () => {
+    isTouchMoved = false; // รีเซ็ตตอนเริ่มแตะ
+});
+
+function openImageModal(imgSrc) {
+    const modal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('modalImg');
+    modalImg.src = imgSrc;
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden'; // ล็อกหน้าจอหลัก
+}
+
+function closeImageModal() {
+    // ถ้าผู้ใช้ใช้นิ้วเลื่อนดูรูปอยู่ จะไม่สั่งปิด ให้ถือว่าเป็นการเลื่อนอ่านเนื้อเพลง
+    if (isTouchMoved) {
+        isTouchMoved = false;
+        return;
+    }
+    
+    const modal = document.getElementById('imageModal');
+    modal.classList.remove('active');
+    document.body.style.overflow = ''; // คืนค่าหน้าจอหลัก
+}
 
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
