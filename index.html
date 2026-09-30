@@ -445,6 +445,7 @@
     </div>
 
     <script>
+        ///ใส่เพลง
         const imageFiles = [
             "ขึ้นใจ (3am call) - Mirrr Ft. BLVCKHEART - Single (Key C).png",
             "Bad Girl Like you - Tobii - Single (Key Em or G).jpeg",
@@ -473,6 +474,11 @@
                 let album = "Single";
                 let key = "-";
 
+                // เช็คว่าเป็น Medley หรือไม่ตั้งแต่เริ่มต้น
+                if (title.toLowerCase().startsWith('medley')) {
+                    album = "Medley";
+                }
+
                 const keyMatch = nameWithoutExt.match(/\((Key\s*[^)]+)\)/i);
                 if (keyMatch) {
                     key = keyMatch[1].trim();
@@ -487,10 +493,15 @@
                     let lastDashIndex = remaining.lastIndexOf('-');
                     if (lastDashIndex !== -1 && remaining.length - lastDashIndex < 20) {
                         artist = remaining.substring(0, lastDashIndex).trim();
-                        album = remaining.substring(lastDashIndex + 1).trim();
+                        // ถ้าไม่ได้ขึ้นต้นด้วย Medley ถึงจะดึงค่าจากชื่อไฟล์ตามปกติ
+                        if (!title.toLowerCase().startsWith('medley')) {
+                            album = remaining.substring(lastDashIndex + 1).trim();
+                        }
                     } else {
                         artist = remaining;
-                        album = "Single";
+                        if (!title.toLowerCase().startsWith('medley')) {
+                            album = "Single";
+                        }
                     }
                 }
 
