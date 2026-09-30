@@ -445,7 +445,6 @@
     </div>
 
     <script>
-        ///ใส่เพลง
         const imageFiles = [
             "ขึ้นใจ (3am call) - Mirrr Ft. BLVCKHEART - Single (Key C).png",
             "Bad Girl Like you - Tobii - Single (Key Em or G).jpeg",
@@ -456,9 +455,9 @@
             "ROR T MT - GAVIN.D FT. 1MILL - Single (Key G).png",
             "ตัวละครเอก - Hunsik - Single (Key G).jpeg",
             "Sorry - Justin Bieber - Single (Key E).jpeg",
-            "Medley เมื่อไหร่+BADBOY+TMRW (Key E-G-B).jpeg",
-            "Medley เค้าก่อน+แฟนใหม่หน้าคุ้น+หลอก (Key C).jpeg",
-            "Medley รักที่ยืมเค้ามา+ครั้งสุดท้าย+ไร้รัก+ไม่เฟี้ยว (Key B-B-E-E).jpeg",
+            "Medley เมื่อไหร่+BADBOY+TMRW - Single (Key E-G-B).jpeg",
+            "Medley เค้าก่อน+แฟนใหม่หน้าคุ้น+หลอก - Single (Key C).jpeg",
+            "Medley รักที่ยืมเค้ามา+ครั้งสุดท้าย+ไร้รัก+ไม่เฟี้ยว - Single (Key B-B-E-E).jpeg",
             "เจ้าของที่ - Mirrr - Single (Key F).jpeg"
         ];
 
@@ -473,14 +472,6 @@
                 let artist = "Unknown Artist";
                 let album = "Single";
                 let key = "-";
-
-                // 1. ดึง Key ออกจากวงเล็บก่อน
-                const keyMatch = nameWithoutExt.match(/\((Key\s*[^)]+)\)/i);
-                if (keyMatch) {
-                    key = keyMatch[1].trim();
-                    // ตัด (Key ...) ออกจากชื่อ เพื่อไม่ให้ชื่อเพลงรกและซ้ำซ้อน
-                    nameWithoutExt = nameWithoutExt.replace(keyMatch[0], '').trim();
-                }
 
                 // เช็คว่าเป็น Medley หรือไม่ตั้งแต่เริ่มต้น
                 if (title.toLowerCase().startsWith('medley')) {
