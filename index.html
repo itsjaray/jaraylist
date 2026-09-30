@@ -523,18 +523,19 @@
 
         function renderCategories() {
             const filterTags = document.getElementById('filterTags');
-            const artists = [...new Set(songs.map(s => s.artist))];
+            // ดึงค่าอัลบั้ม/ประเภทเพลงทั้งหมดมาทำปุ่มกรอง (เช่น Single, Medley หรือชื่ออัลบั้มอื่นๆ)
+            const albums = [...new Set(songs.map(s => s.album))];
             
-            artists.forEach(artist => {
+            albums.forEach(album => {
                 const btn = document.createElement('button');
-                btn.innerText = artist;
-                btn.onclick = (e) => filterByCategory(artist, e.target);
+                btn.innerText = album;
+                btn.onclick = (e) => filterByAlbum(album, e.target);
                 filterTags.appendChild(btn);
             });
         }
 
-        function filterByCategory(category, btnElement) {
-            selectedCategory = category;
+        function filterByAlbum(album, btnElement) {
+            selectedCategory = album;
             document.querySelectorAll('.filter-tags button').forEach(b => b.classList.remove('active'));
             btnElement.classList.add('active');
             filterSongs();
@@ -544,7 +545,7 @@
             const keyword = document.getElementById('searchInput').value.toLowerCase();
             
             const filtered = songs.filter(song => {
-                const matchCategory = (selectedCategory === 'All' || song.artist === selectedCategory);
+                const matchCategory = (selectedCategory === 'All' || song.album === selectedCategory);
                 const matchKeyword = song.title.toLowerCase().includes(keyword) || 
                                    song.artist.toLowerCase().includes(keyword) || 
                                    song.album.toLowerCase().includes(keyword) ||
