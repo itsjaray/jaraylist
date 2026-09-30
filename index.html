@@ -92,12 +92,12 @@
             flex-direction: column;
             flex-shrink: 0;
             transition: transform 0.3s ease;
+            height: 100%;
         }
 
         .sidebar.hidden {
             transform: translateX(-100%);
             position: absolute;
-            height: 100%;
             z-index: 10;
         }
 
@@ -180,11 +180,12 @@
         .lyrics-panel {
             flex: 1;
             background-color: var(--bg-color);
-            padding: 24px;
-            overflow-y: auto;
+            padding: 20px;
+            overflow: hidden; /* ล็อคไม่ให้หน้าจอภาพรวมขยับเกินพื้นที่ */
             display: flex;
             flex-direction: column;
             align-items: center;
+            height: 100%;
         }
 
         .lyrics-content {
@@ -193,12 +194,12 @@
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
-            padding: 20px;
+            padding: 16px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-            text-align: center;
             display: flex;
             flex-direction: column;
-            height: 100%;
+            height: 100%; /* ล็อคขนาดความสูงให้พอดีกรอบหน้าจอเป๊ะๆ */
+            overflow: hidden;
         }
 
         .lyrics-header {
@@ -216,7 +217,7 @@
         }
 
         .lyrics-header h2 {
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             margin-bottom: 2px;
         }
 
@@ -225,22 +226,23 @@
             font-size: 0.85rem;
         }
 
+        /* ส่วนแสดงรูปภาพ: ล็อคกรอบ แต่ข้างในเลื่อน (Scroll) ดูเนื้อเพลงได้ */
         .lyrics-image-container {
             width: 100%;
             flex: 1;
             display: flex;
             justify-content: center;
-            align-items: center;
-            overflow: auto;
+            overflow-y: auto; /* อนุญาตให้เลื่อนดูรูปยาวๆ ได้เฉพาะในกรอบนี้ */
+            overflow-x: hidden;
             background: rgba(0,0,0,0.02);
             border-radius: 8px;
             padding: 10px;
         }
 
         .lyrics-image {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
+            width: 100%; /* ให้รูปกว้างเต็มกรอบสวยงาม */
+            max-width: 800px;
+            height: auto; /* คงสัดส่วนรูปภาพจริง ไม่ให้ภาพยืดผิดรูป */
             border-radius: 4px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
@@ -269,7 +271,7 @@
     <header>
         <h1>🎵 JARAY Lyrics List</h1>
         <div class="controls">
-            <button id="themeToggleBtn" onclick="toggleTheme()">☀️️ โหมดสว่าง</button>
+            <button id="themeToggleBtn" onclick="toggleTheme()">☀️ โหมดสว่าง</button>
         </div>
     </header>
 
@@ -328,7 +330,7 @@
             renderCategories();
             renderSongList(songs);
             if (songs.length > 0) {
-                selectSong(songs[0].id);
+                selectSong(songs.id);
             }
         };
 
@@ -384,7 +386,6 @@
                 `;
                 item.onclick = () => {
                     selectSong(song.id);
-                    // พอกดเลือกเพลงในมือถือหรือจอเล็ก ให้ซ่อนเมนูอัตโนมัติเพื่อให้เห็นรูปเต็มตา
                     if (window.innerWidth <= 768) {
                         document.getElementById('sidebar').classList.add('hidden');
                     }
@@ -418,7 +419,6 @@
             `;
         }
 
-        // ฟังก์ชันเปิด/ปิดเมนูด้านซ้าย
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             sidebar.classList.toggle('hidden');
