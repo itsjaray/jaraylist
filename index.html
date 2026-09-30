@@ -181,7 +181,7 @@
             flex: 1;
             background-color: var(--bg-color);
             padding: 20px;
-            overflow: hidden; /* ล็อคไม่ให้หน้าจอภาพรวมขยับเกินพื้นที่ */
+            overflow: hidden;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -198,7 +198,7 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.02);
             display: flex;
             flex-direction: column;
-            height: 100%; /* ล็อคขนาดความสูงให้พอดีกรอบหน้าจอเป๊ะๆ */
+            height: 100%;
             overflow: hidden;
         }
 
@@ -226,13 +226,13 @@
             font-size: 0.85rem;
         }
 
-        /* ส่วนแสดงรูปภาพ: ล็อคกรอบ แต่ข้างในเลื่อน (Scroll) ดูเนื้อเพลงได้ */
+        /* คอนเทนเนอร์รูปภาพ: ล็อคกรอบและให้เลื่อนดูรูปได้เฉพาะแนวตั้ง รูปไม่ถูกยืด */
         .lyrics-image-container {
             width: 100%;
             flex: 1;
             display: flex;
             justify-content: center;
-            overflow-y: auto; /* อนุญาตให้เลื่อนดูรูปยาวๆ ได้เฉพาะในกรอบนี้ */
+            overflow-y: auto;
             overflow-x: hidden;
             background: rgba(0,0,0,0.02);
             border-radius: 8px;
@@ -240,9 +240,8 @@
         }
 
         .lyrics-image {
-            width: 100%; /* ให้รูปกว้างเต็มกรอบสวยงาม */
-            max-width: 800px;
-            height: auto; /* คงสัดส่วนรูปภาพจริง ไม่ให้ภาพยืดผิดรูป */
+            max-width: 100%; /* จำกัดความกว้างไม่ให้ล้น แต่คงสัดส่วนเดิม */
+            height: auto;     /* คงสัดส่วนจริงของรูป ไม่มียืดเบี้ยว */
             border-radius: 4px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
@@ -330,7 +329,7 @@
             renderCategories();
             renderSongList(songs);
             if (songs.length > 0) {
-                selectSong(songs.id);
+                selectSong(songs[0].id);
             }
         };
 
