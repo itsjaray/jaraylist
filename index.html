@@ -91,14 +91,14 @@
             display: flex;
             flex-direction: column;
             flex-shrink: 0;
-            transition: transform 0.3s ease;
+            transition: transform 0.3s ease, width 0.3s ease, margin 0.3s ease;
+            z-index: 10;
         }
 
+        /* เมื่อซ่อนเมนูด้านซ้าย จะสไลด์ออกและซ่อนพื้นที่ไปเลย */
         .sidebar.hidden {
             transform: translateX(-100%);
-            position: absolute;
-            height: 100%;
-            z-index: 10;
+            margin-left: -350px;
         }
 
         .sidebar-header {
@@ -185,11 +185,12 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            transition: all 0.3s ease;
         }
 
         .lyrics-content {
             width: 100%;
-            max-width: 900px;
+            max-width: 1100px;
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
@@ -253,13 +254,13 @@
 
         @media (max-width: 768px) {
             .sidebar {
-                width: 100%;
                 position: absolute;
                 height: 100%;
-                z-index: 10;
+                width: 100%;
             }
             .sidebar.hidden {
                 transform: translateX(-100%);
+                margin-left: 0;
             }
         }
     </style>
@@ -269,7 +270,8 @@
     <header>
         <h1>🎵 JARAY Lyrics List</h1>
         <div class="controls">
-            <button id="themeToggleBtn" onclick="toggleTheme()">☀️️ โหมดสว่าง</button>
+            <button onclick="toggleSidebar()" style="padding: 6px 12px; font-size: 0.85rem;">📋 เมนูเพลง</button>
+            <button id="themeToggleBtn" onclick="toggleTheme()">☀️ โหมดสว่าง</button>
         </div>
     </header>
 
@@ -329,6 +331,8 @@
             renderSongList(songs);
             if (songs.length > 0) {
                 selectSong(songs[0].id);
+                // ซ่อนเมนูตั้งแต่เริ่มต้นเพื่อให้หน้าจอเนื้อเพลงแสดงเต็มจอทันที
+                toggleSidebar();
             }
         };
 
@@ -384,9 +388,10 @@
                 `;
                 item.onclick = () => {
                     selectSong(song.id);
-                    // พอกดเลือกเพลงในมือถือหรือจอเล็ก ให้ซ่อนเมนูอัตโนมัติเพื่อให้เห็นรูปเต็มตา
-                    if (window.innerWidth <= 768) {
-                        document.getElementById('sidebar').classList.add('hidden');
+                    // พอกดเลือกเพลง เมนูด้านซ้ายจะหุบหายไปทันทีเพื่อให้จอเนื้อเพลงใหญ่เต็มตา
+                    const sidebar = document.getElementById('sidebar');
+                    if (!sidebar.classList.contains('hidden')) {
+                        toggleSidebar();
                     }
                 };
                 songListEl.appendChild(item);
@@ -405,7 +410,7 @@
             panel.innerHTML = `
                 <div class="lyrics-content">
                     <div class="lyrics-header">
-                        <button onclick="toggleSidebar()" style="padding: 6px 10px; font-size: 0.85rem;">▶ เลือกเพลงอื่น</button>
+                        <button onclick="toggleSidebar()" style="padding: 6px 10px; font-size: 0.85rem;">📋 เลือกเพลงอื่น</button>
                         <div class="lyrics-header-info" style="flex: 1; margin-left: 12px;">
                             <h2>${song.title}</h2>
                             <p>ศิลปิน: ${song.artist} | อัลบั้ม: ${song.album}</p>
@@ -418,7 +423,6 @@
             `;
         }
 
-        // ฟังก์ชันเปิด/ปิดเมนูด้านซ้าย
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             sidebar.classList.toggle('hidden');
