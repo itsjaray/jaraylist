@@ -461,13 +461,15 @@
                     }
                 }
 
+                let encodedFilename = filename.split('/').map(encodeURIComponent).join('/');
+
                 return {
                     id: index + 1,
                     title: title,
                     artist: artist,
                     album: album,
                     key: key,
-                    image: `images/${filename}`
+                    image: `images/${encodedFilename}`
                 };
             });
 
