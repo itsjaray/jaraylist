@@ -385,16 +385,22 @@
                 let album = "Single";
                 let key = "-";
 
-                // ค้นหาคำว่า Key จากวงเล็บทั้งหมด และเลือกอันที่ถูกต้องที่สุด (ป้องกันกรณีมีวงเล็บซ้อนในชื่อเพลง)
+                // ค้นหาคำว่า Key จากทุกวงเล็บแล้วเลือกเอา "อันสุดท้าย" (เพื่อข้ามวงเล็บชื่อเพลงอย่าง 3am call)
                 const matches = [...nameWithoutExt.matchAll(/\(([^)]+)\)/g)];
+                let lastKeyMatch = null;
                 for (let match of matches) {
                     let content = match[1].trim();
                     if (/^key\s*/i.test(content)) {
-                        key = content.replace(/^key\s*[:\s]*/i, '').trim();
-                        // ลบเฉพาะส่วนของ Key ออกจากชื่อเพลง เพื่อให้ชื่อเพลงสะอาด
-                        nameWithoutExt = nameWithoutExt.replace(match[0], '').trim();
-                        break;
+                        lastKeyMatch = match;
                     }
+                }
+
+                if (lastKeyMatch) {
+                    let content = lastKeyMatch[1].trim();
+                    // ตัดคำว่า Key ออก และลบเครื่องหมาย : หรือช่องว่างออกให้เหลือแต่ตัวโน้ต เช่น "C"
+                    key = content.replace(/^key\s*[:\s]*/i, '').trim();
+                    // ลบวงเล็บ Key นั้นออกจากสตริงหลักเพื่อไม่ให้ซ้ำซ้อนในชื่อเพลง
+                    nameWithoutExt = nameWithoutExt.replace(lastKeyMatch[0], '').trim();
                 }
 
                 let firstDashIndex = nameWithoutExt.indexOf('-');
