@@ -385,9 +385,16 @@
                 let album = "Single";
                 let key = "-";
 
-                const keyMatch = nameWithoutExt.match(/\(Key\s*([^)]+)\)/i);
+                // ดึงเฉพาะค่าคีย์ข้างในวงเล็บ เช่น "Key C" หรือ "C"
+                const keyMatch = nameWithoutExt.match(/\(([^)]+)\)/i);
                 if (keyMatch) {
-                    key = keyMatch[1].trim();
+                    let extracted = keyMatch[1].trim();
+                    // ถ้าในวงเล็บมีคำว่า Key อยู่แล้ว ให้ใช้ค่านั้นเลย ถ้าไม่มีให้เติมคำว่า Key เข้าไป
+                    if (/^key\s*[:\s]/i.test(extracted)) {
+                        key = extracted.replace(/^key\s*[:\s]*/i, '');
+                    } else {
+                        key = extracted;
+                    }
                     nameWithoutExt = nameWithoutExt.replace(keyMatch[0], '').trim();
                 }
 
@@ -479,7 +486,6 @@
                 `;
                 item.onclick = () => {
                     selectSong(song.id);
-                    // เมนูด้านซ้ายจะไม่ถูกปิดอัตโนมัติเมื่อกดเลือกเพลง
                 };
                 songListEl.appendChild(item);
             });
