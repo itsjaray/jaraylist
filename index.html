@@ -473,32 +473,31 @@
                 let album = "Single";
                 let key = "-";
 
-                // เช็คว่าเป็น Medley หรือไม่ตั้งแต่เริ่มต้น
-                if (title.toLowerCase().startsWith('medley')) {
-                    album = "Medley";
-                }
-
+                // 1. ดึง Key ออกจากวงเล็บก่อน
                 const keyMatch = nameWithoutExt.match(/\((Key\s*[^)]+)\)/i);
                 if (keyMatch) {
                     key = keyMatch[1].trim();
                     nameWithoutExt = nameWithoutExt.replace(keyMatch[0], '').trim();
                 }
 
-                let firstDashIndex = nameWithoutExt.indexOf('-');
-                if (firstDashIndex !== -1) {
-                    title = nameWithoutExt.substring(0, firstDashIndex).trim();
-                    let remaining = nameWithoutExt.substring(firstDashIndex + 1).trim();
+                // 2. เช็คว่าเป็น Medley หรือไม่
+                if (nameWithoutExt.toLowerCase().startsWith('medley')) {
+                    album = "Medley";
+                    artist = "Medley"; // กำหนดให้ศิลปินเป็น Medley ด้วย เพื่อให้ปุ่ม Filter แสดงผลคำว่า Medley ไม่ว่างเปล่า
+                    title = nameWithoutExt;
+                } else {
+                    // เพลงปกติ แยกด้วยขีด (-)
+                    let firstDashIndex = nameWithoutExt.indexOf('-');
+                    if (firstDashIndex !== -1) {
+                        title = nameWithoutExt.substring(0, firstDashIndex).trim();
+                        let remaining = nameWithoutExt.substring(firstDashIndex + 1).trim();
 
-                    let lastDashIndex = remaining.lastIndexOf('-');
-                    if (lastDashIndex !== -1 && remaining.length - lastDashIndex < 20) {
-                        artist = remaining.substring(0, lastDashIndex).trim();
-                        // ถ้าไม่ได้ขึ้นต้นด้วย Medley ถึงจะดึงค่าจากชื่อไฟล์ตามปกติ
-                        if (!title.toLowerCase().startsWith('medley')) {
+                        let lastDashIndex = remaining.lastIndexOf('-');
+                        if (lastDashIndex !== -1 && remaining.length - lastDashIndex < 20) {
+                            artist = remaining.substring(0, lastDashIndex).trim();
                             album = remaining.substring(lastDashIndex + 1).trim();
-                        }
-                    } else {
-                        artist = remaining;
-                        if (!title.toLowerCase().startsWith('medley')) {
+                        } else {
+                            artist = remaining;
                             album = "Single";
                         }
                     }
