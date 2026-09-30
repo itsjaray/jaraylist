@@ -524,6 +524,11 @@
             });
         }
 
+        // เรียงลำดับรายชื่อเพลงตามตัวอักษร (A-Z, ก-ฮ) ของชื่อเพลง (title)
+        songs.sort((a, b) => {
+            return a.title.localeCompare(b.title, 'th', { numeric: true, sensitivity: 'base' });
+        });
+
         window.onload = function() {
             parseSongsFromFilenames();
             renderCategories();
