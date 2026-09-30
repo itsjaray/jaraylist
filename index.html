@@ -326,7 +326,7 @@
             touch-action: pan-y;
         }
 
-        /* Modal สำหรับขยายรูปและซูมด้วย 2 นิ้ว */
+        /* [จุดที่แก้ไข] Modal สำหรับขยายรูปและซูม */
         .image-modal {
             display: none;
             position: fixed;
@@ -337,9 +337,7 @@
             background: rgba(0, 0, 0, 0.9);
             z-index: 1000;
             justify-content: center;
-            align-items: center;
-            overflow: auto;
-            -webkit-overflow-scrolling: touch;
+            align-items: flex-start; /* เปลี่ยนจาก center เป็น flex-start เพื่อรองรับการเลื่อนยาวๆ */
         }
 
         .image-modal.active {
@@ -351,17 +349,20 @@
             min-height: 100%;
             display: flex;
             justify-content: center;
-            align-items: center;
-            padding: 20px;
+            align-items: flex-start; /* จัดชิดบนเพื่อให้เลื่อนขึ้นลงได้ธรรมชาติ */
+            padding: 60px 20px 40px 20px; /* เพิ่มพื้นที่ด้านบนเผื่อปุ่มปิด */
             box-sizing: border-box;
+            overflow-y: auto; /* ย้ายการ scroll มาไว้ที่ตัว wrapper นี้แทน */
+            -webkit-overflow-scrolling: touch;
         }
 
         .image-modal img {
-            max-width: 100%;
-            height: auto;
+            width: 100%;              /* ขยายเต็มความกว้างหน้าจอ */
+            max-width: 800px;         /* จำกัดขนาดสูงสุดไม่ให้กว้างเกินไปบนจอคอม */
+            height: auto;             /* ปรับความสูงตามสัดส่วนจริงของรูปภาพยาวๆ */
             object-fit: contain;
             border-radius: 8px;
-            touch-action: pinch-zoom pan-x pan-y; /* อนุญาตให้ซูมด้วย 2 นิ้ว และเลื่อนดูได้เต็มที่ */
+            touch-action: manipulation;
         }
 
         .close-modal {
