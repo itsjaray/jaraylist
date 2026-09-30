@@ -474,6 +474,14 @@
                 let album = "Single";
                 let key = "-";
 
+                // 1. ดึง Key ออกจากวงเล็บก่อน
+                const keyMatch = nameWithoutExt.match(/\((Key\s*[^)]+)\)/i);
+                if (keyMatch) {
+                    key = keyMatch[1].trim();
+                    // ตัด (Key ...) ออกจากชื่อ เพื่อไม่ให้ชื่อเพลงรกและซ้ำซ้อน
+                    nameWithoutExt = nameWithoutExt.replace(keyMatch[0], '').trim();
+                }
+
                 // เช็คว่าเป็น Medley หรือไม่ตั้งแต่เริ่มต้น
                 if (title.toLowerCase().startsWith('medley')) {
                     album = "Medley";
