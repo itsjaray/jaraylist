@@ -4,33 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JARAY Lyrics List</title>
+    <!-- โหลด Google Fonts: Plus Jakarta Sans และ Prompt เพื่อความโมเดิร์น -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
     <style>
         :root {
-            --bg-color: #f8f9fa;
+            --bg-color: #f4f6f9;
             --card-bg: #ffffff;
-            --text-color: #212529;
-            --text-muted: #6c757d;
-            --border-color: #dee2e6;
-            --primary-color: #0d6efd;
-            --active-bg: #e7f1ff;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --primary-color: #6366f1; /* เปลี่ยนเป็นโทน Indigo สไตล์ Modern App */
+            --primary-hover: #4f46e5;
+            --active-bg: #e0e7ff;
+            --font-main: 'Prompt', 'Plus Jakarta Sans', sans-serif;
         }
 
         [data-theme="dark"] {
-            --bg-color: #121212;
-            --card-bg: #1e1e1e;
-            --text-color: #e0e0e0;
-            --text-muted: #a0a0a0;
-            --border-color: #333333;
-            --primary-color: #bb86fc;
-            --active-bg: #2d2438;
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --primary-color: #818cf8;
+            --primary-hover: #6366f1;
+            --active-bg: #312e81;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            transition: background-color 0.2s, color 0.2s;
+            font-family: var(--font-main);
+            transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
         }
 
         body {
@@ -40,26 +48,31 @@
             flex-direction: column;
             height: 100vh;
             overflow: hidden;
+            letter-spacing: -0.01em;
         }
 
         header {
             background-color: var(--card-bg);
             border-bottom: 1px solid var(--border-color);
-            padding: 12px 16px;
+            padding: 14px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-shrink: 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
         }
 
         h1 {
-            font-size: 1.2rem;
+            font-size: 1.25rem;
             font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .controls {
             display: flex;
-            gap: 8px;
+            gap: 10px;
             align-items: center;
         }
 
@@ -67,14 +80,24 @@
             background: var(--card-bg);
             color: var(--text-color);
             border: 1px solid var(--border-color);
-            padding: 6px 12px;
-            border-radius: 6px;
+            padding: 8px 14px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+
+        button:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
         }
 
         button:active {
-            opacity: 0.7;
+            transform: scale(0.98);
         }
 
         .main-container {
@@ -85,64 +108,75 @@
         }
 
         .sidebar {
-            width: 350px;
+            width: 360px;
             background-color: var(--card-bg);
             border-right: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
             flex-shrink: 0;
-            transition: transform 0.3s ease, width 0.3s ease, margin 0.3s ease;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s ease, margin 0.3s ease;
             z-index: 10;
         }
 
         .sidebar.hidden {
             transform: translateX(-100%);
-            margin-left: -350px;
+            margin-left: -360px;
         }
 
         .sidebar-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px;
+            padding: 16px;
             border-bottom: 1px solid var(--border-color);
         }
 
         .search-box {
-            padding: 12px;
+            padding: 14px 16px;
             border-bottom: 1px solid var(--border-color);
         }
 
         .search-box input {
             width: 100%;
-            padding: 8px 12px;
+            padding: 10px 14px;
             background: var(--bg-color);
             border: 1px solid var(--border-color);
             color: var(--text-color);
-            border-radius: 6px;
-            font-size: 0.95rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
             outline: none;
+        }
+
+        .search-box input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
         }
 
         .filter-tags {
             display: flex;
             gap: 6px;
-            padding: 8px 12px;
+            padding: 10px 16px;
             overflow-x: auto;
             border-bottom: 1px solid var(--border-color);
             white-space: nowrap;
+            scrollbar-width: none; /* ซ่อน scrollbar บน Firefox */
+        }
+        .filter-tags::-webkit-scrollbar {
+            display: none; /* ซ่อน scrollbar บน Chrome/Safari */
         }
 
         .filter-tags button {
             font-size: 0.8rem;
-            padding: 4px 10px;
+            padding: 6px 12px;
             border-radius: 20px;
+            font-weight: 400;
         }
 
         .filter-tags button.active {
             background-color: var(--primary-color);
             color: #fff;
             border-color: var(--primary-color);
+            font-weight: 500;
         }
 
         .song-list {
@@ -151,7 +185,7 @@
         }
 
         .song-item {
-            padding: 12px 16px;
+            padding: 14px 16px;
             border-bottom: 1px solid var(--border-color);
             cursor: pointer;
             display: flex;
@@ -174,24 +208,26 @@
 
         .song-title {
             font-weight: 600;
-            font-size: 1rem;
-            margin-bottom: 2px;
+            font-size: 0.95rem;
+            margin-bottom: 3px;
         }
 
         .song-artist {
-            font-size: 0.85rem;
+            font-size: 0.825rem;
             color: var(--text-muted);
+            font-weight: 300;
         }
 
         .song-key {
-            font-weight: 700;
-            font-size: 0.9rem;
-            color: #ff4d4d;
-            background: rgba(255, 77, 77, 0.1);
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #f43f5e;
+            background: rgba(244, 63, 94, 0.1);
             padding: 4px 8px;
             border-radius: 6px;
-            margin-left: 8px;
+            margin-left: 10px;
             flex-shrink: 0;
+            letter-spacing: 0.02em;
         }
 
         .lyrics-panel {
@@ -202,7 +238,6 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            transition: all 0.3s ease;
         }
 
         .lyrics-content {
@@ -210,9 +245,9 @@
             max-width: 1100px;
             background: var(--card-bg);
             border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02), 0 2px 4px -1px rgba(0,0,0,0.01);
             text-align: center;
             display: flex;
             flex-direction: column;
@@ -220,9 +255,9 @@
         }
 
         .lyrics-header {
-            margin-bottom: 12px;
+            margin-bottom: 16px;
             border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
+            padding-bottom: 14px;
             flex-shrink: 0;
             display: flex;
             justify-content: space-between;
@@ -234,13 +269,15 @@
         }
 
         .lyrics-header h2 {
-            font-size: 1.4rem;
+            font-size: 1.3rem;
+            font-weight: 600;
             margin-bottom: 2px;
         }
 
         .lyrics-header p {
             color: var(--text-muted);
             font-size: 0.85rem;
+            font-weight: 300;
         }
 
         .lyrics-image-container {
@@ -250,24 +287,26 @@
             justify-content: center;
             align-items: center;
             overflow: auto;
-            background: rgba(0,0,0,0.02);
-            border-radius: 8px;
-            padding: 10px;
+            background: rgba(0,0,0,0.015);
+            border-radius: 10px;
+            padding: 12px;
+            border: 1px dashed var(--border-color);
         }
 
         .lyrics-image {
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
-            border-radius: 4px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
 
         .empty-state {
             color: var(--text-muted);
             text-align: center;
-            margin-top: 100px;
-            font-size: 1.1rem;
+            margin-top: 120px;
+            font-size: 1rem;
+            font-weight: 300;
         }
 
         @media (max-width: 768px) {
@@ -288,7 +327,7 @@
     <header>
         <h1>🎵 JARAY Lyrics List</h1>
         <div class="controls">
-            <button onclick="toggleSidebar()" style="padding: 6px 12px; font-size: 0.85rem;">📋 เมนูเพลง</button>
+            <button onclick="toggleSidebar()">📋 เมนูเพลง</button>
             <button id="themeToggleBtn" onclick="toggleTheme()">☀️ โหมดสว่าง</button>
         </div>
     </header>
@@ -298,7 +337,7 @@
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <span style="font-weight: 600; font-size: 0.95rem;">📋 รายชื่อเพลง</span>
-                <button onclick="toggleSidebar()" style="padding: 4px 8px; font-size: 0.8rem;">◀ ซ่อนเมนู</button>
+                <button onclick="toggleSidebar()" style="padding: 4px 10px; font-size: 0.8rem;">◀ ซ่อนเมนู</button>
             </div>
             <div class="search-box">
                 <input type="text" id="searchInput" placeholder="🔍 ค้นหาชื่อเพลง, ศิลปิน, Key..." oninput="filterSongs()">
@@ -318,9 +357,6 @@
     </div>
 
     <script>
-        // 📌 ตรงนี้ใส่แค่ "ชื่อไฟล์รูปภาพ" ในโฟลเดอร์ images/ เท่านั้น! 
-        // ระบบจะแกะชื่อเพลง ศิลปิน และ Key จากชื่อไฟล์ให้อัตโนมัติทันที
-        // ใส่เพลง
         const imageFiles = [
             "ขึ้นใจ (3am call) - Mirrr Ft. BLVCKHEART - Single (Key C).png",
             "Bad Girl Like you - Tobii - Single (Key Em or G).jpeg",
@@ -335,14 +371,11 @@
             "Medley เค้าก่อน+แฟนใหม่หน้าคุ้น+หลอก (Key C).jpeg",
             "Medley รักที่ยืมเค้ามา+ครั้งสุดท้าย+ไร้รัก+ไม่เฟี้ยว (Key B-B-E-E).jpeg",
             "เจ้าของที่ - Mirrr - Single (Key F).jpeg"
-            
         ];
 
         let songs = [];
         let selectedCategory = 'All';
 
-        // ฟังก์ชันแปลงชื่อไฟล์ให้เป็นข้อมูลเพลงอัตโนมัติ
-       // ฟังก์ชันแปลงชื่อไฟล์ให้เป็นข้อมูลเพลงอัตโนมัติ (รองรับขีดเกินในชื่อศิลปิน/อัลบั้ม)
         function parseSongsFromFilenames() {
             songs = imageFiles.map((filename, index) => {
                 let nameWithoutExt = filename.substring(0, filename.lastIndexOf('.')) || filename;
@@ -352,29 +385,22 @@
                 let album = "Single";
                 let key = "-";
 
-                // 1. ดึง Key จากวงเล็บท้ายชื่อ เช่น (Key C) หรือ (Key Am)
                 const keyMatch = nameWithoutExt.match(/\(Key\s*([^)]+)\)/i);
                 if (keyMatch) {
                     key = keyMatch[1].trim();
                     nameWithoutExt = nameWithoutExt.replace(keyMatch[0], '').trim();
                 }
 
-                // 2. แยกชื่อเพลงออกจากส่วนที่เหลือด้วยเครื่องหมายขีดตัวแรก (-)
                 let firstDashIndex = nameWithoutExt.indexOf('-');
                 if (firstDashIndex !== -1) {
                     title = nameWithoutExt.substring(0, firstDashIndex).trim();
                     let remaining = nameWithoutExt.substring(firstDashIndex + 1).trim();
 
-                    // 3. ถ้าเหลือส่วนหลัง ให้เช็คว่ามีขีดอีกไหม (เช่น ศิลปิน Ft. คนอื่นๆ - อัลบั้ม)
-                    // ตรงนี้เราจะให้ส่วนที่เหลือทั้งหมดเป็น Artist ไปเลย หรือถ้าอยากแยก Album ให้ใช้เครื่องหมายขีดตัวสุดท้าย
                     let lastDashIndex = remaining.lastIndexOf('-');
-                    // สมมติถ้ามีขีดมากกว่า 1 อันในส่วนหลัง อาจจะเป็น ศิลปิน - อัลบั้ม
                     if (lastDashIndex !== -1 && remaining.length - lastDashIndex < 20) {
-                        // ถ้าขีดสุดท้ายอยู่ใกล้ 20 ตัวอักษรสุดท้าย ให้เดาว่าเป็น อัลบั้ม
                         artist = remaining.substring(0, lastDashIndex).trim();
                         album = remaining.substring(lastDashIndex + 1).trim();
                     } else {
-                        // นอกนั้นให้เป็นชื่อศิลปินยาวๆ ไปเลย (แก้ปัญหาชื่อ Ft. ที่มีขีดเยอะๆ)
                         artist = remaining;
                         album = "Single";
                     }
@@ -436,7 +462,7 @@
             songListEl.innerHTML = '';
 
             if (songArray.length === 0) {
-                songListEl.innerHTML = '<div style="padding: 16px; color: var(--text-muted); text-align: center;">ไม่พบเพลงที่ค้นหา</div>';
+                songListEl.innerHTML = '<div style="padding: 20px; color: var(--text-muted); text-align: center; font-weight: 300;">ไม่พบเพลงที่ค้นหา</div>';
                 return;
             }
 
@@ -449,12 +475,12 @@
                         <div class="song-title">${song.title}</div>
                         <div class="song-artist">${song.artist} • <span style="color: var(--primary-color);">${song.album}</span></div>
                     </div>
-                    <div class="song-key">Key : ${song.key}</div>
+                    <div class="song-key">${song.key}</div>
                 `;
                 item.onclick = () => {
                     selectSong(song.id);
                     const sidebar = document.getElementById('sidebar');
-                    if (!sidebar.classList.contains('hidden')) {
+                    if (!sidebar.classList.contains('hidden') && window.innerWidth <= 768) {
                         toggleSidebar();
                     }
                 };
@@ -474,10 +500,10 @@
             panel.innerHTML = `
                 <div class="lyrics-content">
                     <div class="lyrics-header">
-                        <button onclick="toggleSidebar()" style="padding: 6px 10px; font-size: 0.85rem;">📋 เลือกเพลงอื่น</button>
-                        <div class="lyrics-header-info" style="flex: 1; margin-left: 12px;">
-                            <h2>${song.title} <span style="color: #ff4d4d; font-size: 1.1rem;">(Key : ${song.key})</span></h2>
-                            <p>ศิลปิน: ${song.artist} | อัลบั้ม: ${song.album}</p>
+                        <button onclick="toggleSidebar()">📋 เลือกเพลงอื่น</button>
+                        <div class="lyrics-header-info" style="flex: 1; margin-left: 14px;">
+                            <h2>${song.title} <span style="color: #f43f5e; font-size: 1rem; font-weight: 500;">(${song.key})</span></h2>
+                            <p>${song.artist} | ${song.album}</p>
                         </div>
                     </div>
                     <div class="lyrics-image-container">
