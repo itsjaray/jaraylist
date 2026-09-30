@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JARAY Lyrics List</title>
     <!-- โหลด Google Fonts: Plus Jakarta Sans และ Prompt เพื่อความโมเดิร์น -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -651,20 +651,15 @@ function openImageModal(imgSrc) {
 }
 
 function closeImageModal() {
+    // ถ้าผู้ใช้ใช้นิ้วเลื่อนดูรูปอยู่ จะไม่สั่งปิด ให้ถือว่าเป็นการเลื่อนอ่านเนื้อเพลง
     if (isTouchMoved) {
         isTouchMoved = false;
         return;
     }
     
     const modal = document.getElementById('imageModal');
-    const modalImg = document.getElementById('modalImg');
     modal.classList.remove('active');
-    document.body.style.overflow = '';
-    
-    // รีเซ็ตขนาดการซูมของรูปภาพทันทีที่ปิด เพื่อไม่ให้ภาพค้างสเกลเดิม
-    setTimeout(() => {
-        modalImg.style.transform = 'scale(1)';
-    }, 200);
+    document.body.style.overflow = ''; // คืนค่าหน้าจอหลัก
 }
 
         function toggleSidebar() {
