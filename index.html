@@ -81,6 +81,7 @@
             display: flex;
             flex: 1;
             overflow: hidden;
+            position: relative;
         }
 
         .sidebar {
@@ -90,6 +91,22 @@
             display: flex;
             flex-direction: column;
             flex-shrink: 0;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar.hidden {
+            transform: translateX(-100%);
+            position: absolute;
+            height: 100%;
+            z-index: 10;
+        }
+
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .search-box {
@@ -189,6 +206,13 @@
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 10px;
             flex-shrink: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .lyrics-header-info {
+            text-align: left;
         }
 
         .lyrics-header h2 {
@@ -201,7 +225,6 @@
             font-size: 0.85rem;
         }
 
-        /* ส่วนแสดงรูปภาพแบบล็อกขนาดและเลื่อนดูได้ภายในกรอบ */
         .lyrics-image-container {
             width: 100%;
             flex: 1;
@@ -229,16 +252,14 @@
         }
 
         @media (max-width: 768px) {
-            .main-container {
-                flex-direction: column;
-            }
             .sidebar {
                 width: 100%;
-                height: 35vh;
+                position: absolute;
+                height: 100%;
+                z-index: 10;
             }
-            .lyrics-panel {
-                height: 65vh;
-                padding: 12px;
+            .sidebar.hidden {
+                transform: translateX(-100%);
             }
         }
     </style>
@@ -248,13 +269,17 @@
     <header>
         <h1>🎵 JARAY Lyrics List</h1>
         <div class="controls">
-            <button id="themeToggleBtn" onclick="toggleTheme()">☀️ โหมดสว่าง</button>
+            <button id="themeToggleBtn" onclick="toggleTheme()">☀️️ โหมดสว่าง</button>
         </div>
     </header>
 
     <div class="main-container">
         <!-- แผงรายชื่อเพลงและค้นหา -->
-        <div class="sidebar">
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <span style="font-weight: 600; font-size: 0.95rem;">📋 รายชื่อเพลง</span>
+                <button onclick="toggleSidebar()" style="padding: 4px 8px; font-size: 0.8rem;">◀ ซ่อนเมนู</button>
+            </div>
             <div class="search-box">
                 <input type="text" id="searchInput" placeholder="🔍 ค้นหาชื่อเพลง, ศิลปิน, อัลบั้ม..." oninput="filterSongs()">
             </div>
@@ -273,16 +298,13 @@
     </div>
 
     <script>
-        // ==========================================
-        // รายชื่อเพลงและลิงก์รูปภาพของคุณ
-        // ==========================================
         const songs = [
             {
                 id: 1,
                 title: "ขึ้นใจ (3am call)",
                 artist: "Mirrr Ft. BLVCKHEART",
                 album: "Single",
-                image: "images/ขึ้นใจ.png" // ดึงรูปจากโฟลเดอร์ images
+                image: "images/ขึ้นใจ.png"
             },
             {
                 id: 2,
@@ -305,13 +327,11 @@
         window.onload = function() {
             renderCategories();
             renderSongList(songs);
-            // เลือกเพลงแรกให้แสดงผลทันทีเมื่อเข้าเว็บ
             if (songs.length > 0) {
                 selectSong(songs[0].id);
             }
         };
 
-        // สร้างปุ่มหมวดหมู่ศิลปินอัตโนมัติ
         function renderCategories() {
             const filterTags = document.getElementById('filterTags');
             const artists = [...new Set(songs.map(s => s.artist))];
@@ -324,7 +344,6 @@
             });
         }
 
-        // กรองตามศิลปิน
         function filterByCategory(category, btnElement) {
             selectedCategory = category;
             document.querySelectorAll('.filter-tags button').forEach(b => b.classList.remove('active'));
@@ -332,7 +351,6 @@
             filterSongs();
         }
 
-        // ค้นหาเพลง
         function filterSongs() {
             const keyword = document.getElementById('searchInput').value.toLowerCase();
             
@@ -347,7 +365,6 @@
             renderSongList(filtered);
         }
 
-        // แสดงรายชื่อเพลงใน Sidebar
         function renderSongList(songArray) {
             const songListEl = document.getElementById('songList');
             songListEl.innerHTML = '';
@@ -365,12 +382,17 @@
                     <div class="song-title">${song.title}</div>
                     <div class="song-artist">${song.artist} • <span style="color: var(--primary-color);">${song.album}</span></div>
                 `;
-                item.onclick = () => selectSong(song.id);
+                item.onclick = () => {
+                    selectSong(song.id);
+                    // พอกดเลือกเพลงในมือถือหรือจอเล็ก ให้ซ่อนเมนูอัตโนมัติเพื่อให้เห็นรูปเต็มตา
+                    if (window.innerWidth <= 768) {
+                        document.getElementById('sidebar').classList.add('hidden');
+                    }
+                };
                 songListEl.appendChild(item);
             });
         }
 
-        // เลือกเพลงมาแสดงรูปเนื้อเพลงแบบล็อกหน้าจอ
         function selectSong(id) {
             document.querySelectorAll('.song-item').forEach(el => el.classList.remove('active'));
             const activeItem = document.getElementById(`song-item-${id}`);
@@ -383,8 +405,11 @@
             panel.innerHTML = `
                 <div class="lyrics-content">
                     <div class="lyrics-header">
-                        <h2>${song.title}</h2>
-                        <p>ศิลปิน: ${song.artist} | อัลบั้ม: ${song.album}</p>
+                        <button onclick="toggleSidebar()" style="padding: 6px 10px; font-size: 0.85rem;">▶ เลือกเพลงอื่น</button>
+                        <div class="lyrics-header-info" style="flex: 1; margin-left: 12px;">
+                            <h2>${song.title}</h2>
+                            <p>ศิลปิน: ${song.artist} | อัลบั้ม: ${song.album}</p>
+                        </div>
                     </div>
                     <div class="lyrics-image-container">
                         <img src="${song.image}" alt="${song.title}" class="lyrics-image">
@@ -393,7 +418,12 @@
             `;
         }
 
-        // สลับโหมดมืด / สว่าง
+        // ฟังก์ชันเปิด/ปิดเมนูด้านซ้าย
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('hidden');
+        }
+
         function toggleTheme() {
             const body = document.body;
             const btn = document.getElementById('themeToggleBtn');
