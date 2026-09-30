@@ -269,6 +269,12 @@
             align-items: center;
         }
 
+        .lyrics-header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
         .lyrics-header-info {
             text-align: left;
         }
@@ -332,7 +338,6 @@
     <header>
         <h1>🎵 JARAY Lyrics List</h1>
         <div class="controls">
-            <!-- ย้ายปุ่ม เมนูเพลง ออกจาก Header ไปไว้ที่ส่วนหัวข้อเนื้อเพลงแล้ว -->
             <button id="themeToggleBtn" onclick="toggleTheme()">☀️ โหมดสว่าง</button>
         </div>
     </header>
@@ -505,12 +510,14 @@
             panel.innerHTML = `
                 <div class="lyrics-content">
                     <div class="lyrics-header">
-                        <div class="lyrics-header-info" style="flex: 1;">
-                            <h2>${song.title} <span style="color: #f43f5e; font-size: 1rem; font-weight: 500;">(${song.key})</span></h2>
-                            <p>${song.artist} | ${song.album}</p>
+                        <!-- ย้ายปุ่ม เมนูเพลง มาไว้ทางซ้ายคู่กับชื่อเพลงแล้ว -->
+                        <div class="lyrics-header-left">
+                            <button onclick="toggleSidebar()">📋 เมนูเพลง</button>
+                            <div class="lyrics-header-info">
+                                <h2>${song.title} <span style="color: #f43f5e; font-size: 1rem; font-weight: 500;">(${song.key})</span></h2>
+                                <p>${song.artist} | ${song.album}</p>
+                            </div>
                         </div>
-                        <!-- ย้ายปุ่ม เมนูเพลง มาไว้ตรงนี้ (วงกลมสีเขียว) -->
-                        <button onclick="toggleSidebar()">📋 เมนูเพลง</button>
                     </div>
                     <div class="lyrics-image-container">
                         <img src="${song.image}" alt="${song.title}" class="lyrics-image">
