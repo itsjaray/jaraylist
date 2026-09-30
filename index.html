@@ -338,8 +338,9 @@
             z-index: 1000;
             justify-content: center;
             align-items: flex-start;
-            overflow-y: auto; /* ให้ตัว Modal เลื่อนแนวตั้งได้ */
+            overflow-y: auto;
             -webkit-overflow-scrolling: touch;
+            cursor: pointer; /* เปลี่ยนเมาส์เป็นรูปมือบอกว่ากดปิดได้ */
         }
 
         .image-modal.active {
@@ -352,9 +353,8 @@
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            padding: 60px 16px 40px 16px;
+            padding: 40px 16px;
             box-sizing: border-box;
-            /* เอา overflow ออกจากตรงนี้ เพื่อให้หน้าต่างหลักจัดการแทน และเปิดให้ซูมได้ */
         }
 
         .image-modal img {
@@ -363,27 +363,7 @@
             height: auto;
             object-fit: contain;
             border-radius: 8px;
-            /* เปลี่ยนเป็น auto เพื่อให้ระบบนิ้วซูม (Pinch-to-zoom) ของแท็บเล็ตทำงานได้ */
-            touch-action: auto; 
-            pointer-events: auto;
-        }
-
-        .close-modal {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.2);
-            color: #fff;
-            border: none;
-            border-radius: 50%;
-            width: 44px;
-            height: 44px;
-            font-size: 1.2rem;
-            cursor: pointer;
-            z-index: 1001;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            touch-action: auto; /* เปิดให้ซูมได้ปกติ */
         }
 
         .empty-state {
@@ -440,10 +420,9 @@
         </div>
     </div>
 
-    <!-- Modal สำหรับขยายรูปและซูม -->
+    <!-- Modal สำหรับขยายรูปและซูม (แตะตรงไหนก็ได้เพื่อปิด) -->
     <div class="image-modal" id="imageModal" onclick="closeImageModal()">
-        <button class="close-modal" onclick="closeImageModal(event)">✕</button>
-        <div class="modal-content-wrapper" onclick="event.stopPropagation()">
+        <div class="modal-content-wrapper">
             <img id="modalImg" src="" alt="Zoomed Lyrics">
         </div>
     </div>
@@ -658,8 +637,7 @@
             modal.classList.add('active');
         }
 
-        function closeImageModal(event) {
-            if (event) event.stopPropagation();
+        function closeImageModal() {
             const modal = document.getElementById('imageModal');
             modal.classList.remove('active');
         }
