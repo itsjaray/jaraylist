@@ -235,15 +235,16 @@
             letter-spacing: 0.02em;
         }
 
+        /* ส่วนแสดงเนื้อเพลงหลัก (ให้เลื่อนดูได้ทั้งหน้า) */
         .lyrics-panel {
             flex: 1;
             background-color: var(--bg-color);
-            padding: 24px;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
             display: flex;
             flex-direction: column;
             align-items: center;
+            padding: 24px;
         }
 
         .lyrics-content {
@@ -259,14 +260,22 @@
             flex-direction: column;
         }
 
+        /* ส่วนหัวข้อเพลงที่จะถูกตรึงไว้ให้อยู่ข้างบนเสมอเวลา scroll */
         .lyrics-header {
-            margin-bottom: 16px;
+            position: sticky;
+            top: -24px; /* ดึงขึ้นไปชิดขอบบนสุดของการ์ดพอดี */
+            background-color: var(--card-bg);
+            margin: -24px -24px 16px -24px; /* ขยายให้เต็มขอบการ์ดซ้าย-ขวา-บน */
+            padding: 16px 24px;
             border-bottom: 1px solid var(--border-color);
-            padding-bottom: 14px;
             flex-shrink: 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            z-index: 5;
+            box-shadow: 0 4px 6px -2px rgba(0,0,0,0.05); /* เพิ่มเงาเล็กน้อยเพื่อให้รู้ว่าลอยอยู่ */
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
         }
 
         .lyrics-header-left {
