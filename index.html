@@ -523,13 +523,22 @@
                 };
             });
 
-            // เรียงลำดับตาม Key ของเพลง (ถ้า Key เหมือนกัน จะเรียงตามชื่อเพลง A-Z ต่อ)
+            // เรียงลำดับตาม Key ของเพลง
             songs.sort((a, b) => {
-                let keyCompare = a.key.localeCompare(b.key, 'en', { numeric: true, sensitivity: 'base' });
+                // ฟังก์ชันช่วยจัดน้ำหนักหรือดึงคีย์หลักมาเทียบ (เช่น ถ้ามีคำว่า G ให้ถือว่าอยู่กลุ่ม G)
+                let keyA = a.key;
+                let keyB = b.key;
+
+                // ถ้าคีย์มีคำว่า 'or G' หรือลงท้ายด้วย G ให้ปรับลำดับให้มาอยู่กลุ่ม G
+                if (keyA.includes('or G') || keyA === 'Key G') keyA = 'Key G';
+                if (keyB.includes('or G') || keyB === 'Key G') keyB = 'Key G';
+
+                let keyCompare = keyA.localeCompare(keyB, 'en', { numeric: true, sensitivity: 'base' });
                 if (keyCompare !== 0) {
                     return keyCompare;
                 }
-                // ถ้า Key ตรงกัน ให้เรียงตามชื่อเพลงต่อ
+                
+                // ถ้า Key ตรงกัน ให้เรียงตามชื่อเพลงต่อ (A-Z, ก-ฮ)
                 return a.title.localeCompare(b.title, 'th', { 
                     numeric: true, 
                     sensitivity: 'base',
