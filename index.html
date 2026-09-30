@@ -327,7 +327,7 @@
     <header>
         <h1>🎵 JARAY Lyrics List</h1>
         <div class="controls">
-            <button onclick="toggleSidebar()">📋 เมนูเพลง</button>
+            <!-- ย้ายปุ่มเมนูเพลงออก เอาไว้เฉพาะปุ่มโหมดสว่าง/มืดบนขวา -->
             <button id="themeToggleBtn" onclick="toggleTheme()">☀️ โหมดสว่าง</button>
         </div>
     </header>
@@ -385,7 +385,6 @@
                 let album = "Single";
                 let key = "-";
 
-                // ดึงเฉพาะข้อความในวงเล็บ Key มาเก็บไว้ (ยังคงคำว่า Key ไว้ตามเดิม)
                 const keyMatch = nameWithoutExt.match(/\((Key\s*[^)]+)\)/i);
                 if (keyMatch) {
                     key = keyMatch[1].trim();
@@ -480,7 +479,6 @@
                 `;
                 item.onclick = () => {
                     selectSong(song.id);
-                    // สั่งซ่อนเมนูด้านซ้ายทันทีเมื่อกดเลือกเพลง
                     const sidebar = document.getElementById('sidebar');
                     if (!sidebar.classList.contains('hidden')) {
                         sidebar.classList.add('hidden');
@@ -502,9 +500,13 @@
             panel.innerHTML = `
                 <div class="lyrics-content">
                     <div class="lyrics-header">
-                        <div class="lyrics-header-info" style="flex: 1;">
-                            <h2>${song.title} <span style="color: #f43f5e; font-size: 1rem; font-weight: 500;">(${song.key})</span></h2>
-                            <p>${song.artist} | ${song.album}</p>
+                        <!-- ย้ายปุ่มเมนูเพลงมาไว้ตรงหัวข้อเนื้อเพลง (วงกลมสีเขียว) -->
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <button onclick="toggleSidebar()" style="padding: 6px 12px; font-size: 0.8rem;">📋 เมนูเพลง</button>
+                            <div class="lyrics-header-info" style="text-align: left;">
+                                <h2>${song.title} <span style="color: #f43f5e; font-size: 1rem; font-weight: 500;">(${song.key})</span></h2>
+                                <p>${song.artist} | ${song.album}</p>
+                            </div>
                         </div>
                     </div>
                     <div class="lyrics-image-container">
