@@ -136,11 +136,12 @@
             padding: 14px 16px;
             border-bottom: 1px solid var(--border-color);
             flex-shrink: 0;
+            position: relative; /* สำคัญสำหรับจัดตำแหน่งปุ่มกากบาท */
         }
 
         .search-box input {
             width: 100%;
-            padding: 10px 14px;
+            padding: 10px 36px 10px 14px; /* เว้นพื้นที่ด้านขวาให้ปุ่มกากบาท */
             background: var(--bg-color);
             border: 1px solid var(--border-color);
             color: var(--text-color);
@@ -152,6 +153,27 @@
         .search-box input:focus {
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+        }
+
+        /* ปุ่มกากบาทเคลียร์ข้อความ */
+        .clear-search-btn {
+            position: absolute;
+            right: 26px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 4px;
+            display: none; /* ซ่อนไว้ก่อนเมื่อยังไม่ได้พิมพ์ */
+            box-shadow: none;
+        }
+
+        .clear-search-btn:hover {
+            color: var(--text-color);
+            border: none;
         }
 
         .filter-tags {
@@ -358,6 +380,7 @@
             </div>
             <div class="search-box">
                 <input type="text" id="searchInput" placeholder="🔍 ค้นหาชื่อเพลง, ศิลปิน, Key..." oninput="filterSongs()">
+                <button id="clearBtn" class="clear-search-btn" onclick="clearSearch()">✕</button>
             </div>
             <div class="filter-tags" id="filterTags">
                 <button class="active" onclick="filterByCategory('All', this)">ทั้งหมด</button>
@@ -611,6 +634,33 @@
                 btn.innerText = '☀️ โหมดสว่าง';
             }
         }
+
+        // จัดการการแสดงปุ่มกากบาทและกรองข้อมูลเมื่อพิมพ์
+        function handleSearchInput() {
+            const input = document.getElementById('searchInput');
+            const clearBtn = document.getElementById('clearBtn');
+            
+            // แสดงปุ่มกากบาทเมื่อมีข้อความพิมพ์อยู่
+            if (input.value.length > 0) {
+                clearBtn.style.display = 'block';
+            } else {
+                clearBtn.style.display = 'none';
+            }
+            
+            filterSongs();
+        }
+
+        // ฟังก์ชันล้างข้อความเมื่อกดปุ่มกากบาท
+        function clearSearch() {
+            const input = document.getElementById('searchInput');
+            const clearBtn = document.getElementById('clearBtn');
+            
+            input.value = '';
+            clearBtn.style.display = 'none';
+            input.focus(); // โฟกัสกลับมาที่ช่องพิมพ์
+            filterSongs();
+        }
+        
     </script>
 </body>
 </html>
