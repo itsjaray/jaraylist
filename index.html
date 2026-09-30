@@ -385,17 +385,16 @@
                 let album = "Single";
                 let key = "-";
 
-                // ดึงเฉพาะค่าคีย์ข้างในวงเล็บ เช่น "Key C" หรือ "C"
-                const keyMatch = nameWithoutExt.match(/\(([^)]+)\)/i);
-                if (keyMatch) {
-                    let extracted = keyMatch[1].trim();
-                    // ถ้าในวงเล็บมีคำว่า Key อยู่แล้ว ให้ใช้ค่านั้นเลย ถ้าไม่มีให้เติมคำว่า Key เข้าไป
-                    if (/^key\s*[:\s]/i.test(extracted)) {
-                        key = extracted.replace(/^key\s*[:\s]*/i, '');
-                    } else {
-                        key = extracted;
+                // ค้นหาคำว่า Key จากวงเล็บทั้งหมด และเลือกอันที่ถูกต้องที่สุด (ป้องกันกรณีมีวงเล็บซ้อนในชื่อเพลง)
+                const matches = [...nameWithoutExt.matchAll(/\(([^)]+)\)/g)];
+                for (let match of matches) {
+                    let content = match[1].trim();
+                    if (/^key\s*/i.test(content)) {
+                        key = content.replace(/^key\s*[:\s]*/i, '').trim();
+                        // ลบเฉพาะส่วนของ Key ออกจากชื่อเพลง เพื่อให้ชื่อเพลงสะอาด
+                        nameWithoutExt = nameWithoutExt.replace(match[0], '').trim();
+                        break;
                     }
-                    nameWithoutExt = nameWithoutExt.replace(keyMatch[0], '').trim();
                 }
 
                 let firstDashIndex = nameWithoutExt.indexOf('-');
@@ -482,7 +481,7 @@
                         <div class="song-title">${song.title}</div>
                         <div class="song-artist">${song.artist} • <span style="color: var(--primary-color);">${song.album}</span></div>
                     </div>
-                    <div class="song-key">Key : ${song.key}</div>
+                    <div class="song-key">Key ${song.key}</div>
                 `;
                 item.onclick = () => {
                     selectSong(song.id);
@@ -504,7 +503,7 @@
                 <div class="lyrics-content">
                     <div class="lyrics-header">
                         <div class="lyrics-header-info" style="flex: 1;">
-                            <h2>${song.title} <span style="color: #f43f5e; font-size: 1rem; font-weight: 500;">(Key : ${song.key})</span></h2>
+                            <h2>${song.title} <span style="color: #f43f5e; font-size: 1rem; font-weight: 500;">(Key ${song.key})</span></h2>
                             <p>${song.artist} | ${song.album}</p>
                         </div>
                     </div>
