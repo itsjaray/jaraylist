@@ -522,22 +522,23 @@
                     image: `images/${filename}`
                 };
             });
+
+            songs.sort((a, b) => {
+                // เช็คว่าขึ้นต้นด้วยภาษาไทยหรือไม่
+                const isThaiA = /^[ก-ฮ]/i.test(a.title);
+                const isThaiB = /^[ก-ฮ]/i.test(b.title);
+
+                // ถ้าตัวนึงเป็นไทย ตัวนึงเป็นอังกฤษ ให้จัดการลำดับตามต้องการ
+                // (ในที่นี้ถ้าอยากให้ภาษาไทยขึ้นก่อน หรืออังกฤษขึ้นก่อนปรับได้เลยครับ)
+    
+                return a.title.localeCompare(b.title, 'th', { 
+                    numeric: true, 
+                    sensitivity: 'base',
+                    ignorePunctuation: true 
+                });
+            });
         }
 
-        songs.sort((a, b) => {
-            // เช็คว่าขึ้นต้นด้วยภาษาไทยหรือไม่
-            const isThaiA = /^[ก-ฮ]/i.test(a.title);
-            const isThaiB = /^[ก-ฮ]/i.test(b.title);
-
-            // ถ้าตัวนึงเป็นไทย ตัวนึงเป็นอังกฤษ ให้จัดการลำดับตามต้องการ
-            // (ในที่นี้ถ้าอยากให้ภาษาไทยขึ้นก่อน หรืออังกฤษขึ้นก่อนปรับได้เลยครับ)
-    
-            return a.title.localeCompare(b.title, 'th', { 
-                numeric: true, 
-                sensitivity: 'base',
-                ignorePunctuation: true 
-            });
-        });
 
         window.onload = function() {
             parseSongsFromFilenames();
