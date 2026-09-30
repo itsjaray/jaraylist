@@ -334,9 +334,9 @@
         let selectedCategory = 'All';
 
         // ฟังก์ชันแปลงชื่อไฟล์ให้เป็นข้อมูลเพลงอัตโนมัติ
+       // ฟังก์ชันแปลงชื่อไฟล์ให้เป็นข้อมูลเพลงอัตโนมัติ (รองรับขีดเกินในชื่อศิลปิน/อัลบั้ม)
         function parseSongsFromFilenames() {
             songs = imageFiles.map((filename, index) => {
-                // ตัดนามสกุลไฟล์ออก (.png, .jpg ฯลฯ)
                 let nameWithoutExt = filename.substring(0, filename.lastIndexOf('.')) || filename;
                 
                 let title = nameWithoutExt;
@@ -344,18 +344,33 @@
                 let album = "Single";
                 let key = "-";
 
-                // ดึง Key จากวงเล็บท้ายชื่อ เช่น (Key C) หรือ (Key Am)
+                // 1. ดึง Key จากวงเล็บท้ายชื่อ เช่น (Key C) หรือ (Key Am)
                 const keyMatch = nameWithoutExt.match(/\(Key\s*([^)]+)\)/i);
                 if (keyMatch) {
                     key = keyMatch[1].trim();
                     nameWithoutExt = nameWithoutExt.replace(keyMatch[0], '').trim();
                 }
 
-                // แยกด้วยเครื่องหมายขีด (-) ระหว่าง ชื่อเพลง - ศิลปิน - อัลบั้ม
-                let parts = nameWithoutExt.split('-').map(p => p.trim());
-                if (parts.length >= 1) title = parts[0];
-                if (parts.length >= 2) artist = parts[1];
-                if (parts.length >= 3) album = parts[2];
+                // 2. แยกชื่อเพลงออกจากส่วนที่เหลือด้วยเครื่องหมายขีดตัวแรก (-)
+                let firstDashIndex = nameWithoutExt.indexOf('-');
+                if (firstDashIndex !== -1) {
+                    title = nameWithoutExt.substring(0, firstDashIndex).trim();
+                    let remaining = nameWithoutExt.substring(firstDashIndex + 1).trim();
+
+                    // 3. ถ้าเหลือส่วนหลัง ให้เช็คว่ามีขีดอีกไหม (เช่น ศิลปิน Ft. คนอื่นๆ - อัลบั้ม)
+                    // ตรงนี้เราจะให้ส่วนที่เหลือทั้งหมดเป็น Artist ไปเลย หรือถ้าอยากแยก Album ให้ใช้เครื่องหมายขีดตัวสุดท้าย
+                    let lastDashIndex = remaining.lastIndexOf('-');
+                    // สมมติถ้ามีขีดมากกว่า 1 อันในส่วนหลัง อาจจะเป็น ศิลปิน - อัลบั้ม
+                    if (lastDashIndex !== -1 && remaining.length - lastDashIndex < 20) {
+                        // ถ้าขีดสุดท้ายอยู่ใกล้ 20 ตัวอักษรสุดท้าย ให้เดาว่าเป็น อัลบั้ม
+                        artist = remaining.substring(0, lastDashIndex).trim();
+                        album = remaining.substring(lastDashIndex + 1).trim();
+                    } else {
+                        // นอกนั้นให้เป็นชื่อศิลปินยาวๆ ไปเลย (แก้ปัญหาชื่อ Ft. ที่มีขีดเยอะๆ)
+                        artist = remaining;
+                        album = "Single";
+                    }
+                }
 
                 return {
                     id: index + 1,
