@@ -16,7 +16,7 @@
             --text-color: #1e293b;
             --text-muted: #64748b;
             --border-color: #e2e8f0;
-            --primary-color: #6366f1; /* เปลี่ยนเป็นโทน Indigo สไตล์ Modern App */
+            --primary-color: #6366f1;
             --primary-hover: #4f46e5;
             --active-bg: #e0e7ff;
             --font-main: 'Prompt', 'Plus Jakarta Sans', sans-serif;
@@ -159,10 +159,10 @@
             overflow-x: auto;
             border-bottom: 1px solid var(--border-color);
             white-space: nowrap;
-            scrollbar-width: none; /* ซ่อน scrollbar บน Firefox */
+            scrollbar-width: none;
         }
         .filter-tags::-webkit-scrollbar {
-            display: none; /* ซ่อน scrollbar บน Chrome/Safari */
+            display: none;
         }
 
         .filter-tags button {
@@ -475,14 +475,11 @@
                         <div class="song-title">${song.title}</div>
                         <div class="song-artist">${song.artist} • <span style="color: var(--primary-color);">${song.album}</span></div>
                     </div>
-                    <div class="song-key">${song.key}</div>
+                    <div class="song-key">Key : ${song.key}</div>
                 `;
                 item.onclick = () => {
                     selectSong(song.id);
-                    const sidebar = document.getElementById('sidebar');
-                    if (!sidebar.classList.contains('hidden') && window.innerWidth <= 768) {
-                        toggleSidebar();
-                    }
+                    // เมนูด้านซ้ายจะไม่ถูกปิดอัตโนมัติเมื่อกดเลือกเพลง
                 };
                 songListEl.appendChild(item);
             });
@@ -500,9 +497,8 @@
             panel.innerHTML = `
                 <div class="lyrics-content">
                     <div class="lyrics-header">
-                        <button onclick="toggleSidebar()">📋 เลือกเพลงอื่น</button>
-                        <div class="lyrics-header-info" style="flex: 1; margin-left: 14px;">
-                            <h2>${song.title} <span style="color: #f43f5e; font-size: 1rem; font-weight: 500;">(${song.key})</span></h2>
+                        <div class="lyrics-header-info" style="flex: 1;">
+                            <h2>${song.title} <span style="color: #f43f5e; font-size: 1rem; font-weight: 500;">(Key : ${song.key})</span></h2>
                             <p>${song.artist} | ${song.album}</p>
                         </div>
                     </div>
