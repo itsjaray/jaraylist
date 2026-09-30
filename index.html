@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Lyrics & Chords App</title>
+    <title>JARAY Lyrics List</title>
     <style>
         :root {
             --bg-color: #f8f9fa;
@@ -172,36 +172,42 @@
 
         .lyrics-content {
             width: 100%;
-            max-width: 800px;
+            max-width: 900px;
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 20px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.02);
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
         }
 
         .lyrics-header {
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             border-bottom: 1px solid var(--border-color);
-            padding-bottom: 12px;
+            padding-bottom: 10px;
+            flex-shrink: 0;
         }
 
         .lyrics-header h2 {
             font-size: 1.4rem;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
 
         .lyrics-header p {
             color: var(--text-muted);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
 
-        /* ส่วนแสดงรูปภาพเนื้อเพลง */
+        /* ส่วนแสดงรูปภาพแบบล็อกขนาดและเลื่อนดูได้ภายในกรอบ */
         .lyrics-image-container {
             width: 100%;
+            flex: 1;
             display: flex;
             justify-content: center;
+            align-items: center;
             overflow: auto;
             background: rgba(0,0,0,0.02);
             border-radius: 8px;
@@ -210,9 +216,9 @@
 
         .lyrics-image {
             max-width: 100%;
-            height: auto;
+            max-height: 100%;
+            object-fit: contain;
             border-radius: 4px;
-            cursor: zoom-in;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
@@ -228,10 +234,10 @@
             }
             .sidebar {
                 width: 100%;
-                height: 40vh;
+                height: 35vh;
             }
             .lyrics-panel {
-                height: 60vh;
+                height: 65vh;
                 padding: 12px;
             }
         }
@@ -261,7 +267,7 @@
         <!-- แผงแสดงรูปภาพเนื้อเพลง -->
         <div class="lyrics-panel" id="lyricsPanel">
             <div class="empty-state">
-                <p>👈 กรุณาเลือกเพลงจากรายการด้านซ้ายเพื่อดูรูปเนื้อเพลง</p>
+                <p>👈 กรุณาเลือกเพลงจากรายการด้านซ้ายเพื่อดูเนื้อเพลง</p>
             </div>
         </div>
     </div>
@@ -275,8 +281,8 @@
                 id: 1,
                 title: "ขึ้นใจ (3am call)",
                 artist: "Mirrr Ft. BLVCKHEART",
-                KEY: "C",
-                image: "images/ขึ้นใจ.png" // ชี้ไปที่ไฟล์รูปภาพในโฟลเดอร์ของคุณ
+                album: "Single",
+                image: "images/ขึ้นใจ.png" // ดึงรูปจากโฟลเดอร์ images
             },
             {
                 id: 2,
@@ -290,7 +296,7 @@
                 title: "ชื่อเพลงที่ 3",
                 artist: "ชื่อศิลปิน A",
                 album: "ชื่ออัลบั้ม 1",
-                image: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800" // ตัวอย่างกรณีดึงจากลิงก์ภายนอก
+                image: "images/song3.jpg"
             }
         ];
 
@@ -299,6 +305,10 @@
         window.onload = function() {
             renderCategories();
             renderSongList(songs);
+            // เลือกเพลงแรกให้แสดงผลทันทีเมื่อเข้าเว็บ
+            if (songs.length > 0) {
+                selectSong(songs[0].id);
+            }
         };
 
         // สร้างปุ่มหมวดหมู่ศิลปินอัตโนมัติ
@@ -360,7 +370,7 @@
             });
         }
 
-        // เลือกเพลงมาแสดงรูปเนื้อเพลง
+        // เลือกเพลงมาแสดงรูปเนื้อเพลงแบบล็อกหน้าจอ
         function selectSong(id) {
             document.querySelectorAll('.song-item').forEach(el => el.classList.remove('active'));
             const activeItem = document.getElementById(`song-item-${id}`);
@@ -377,9 +387,8 @@
                         <p>ศิลปิน: ${song.artist} | อัลบั้ม: ${song.album}</p>
                     </div>
                     <div class="lyrics-image-container">
-                        <img src="${song.image}" alt="${song.title}" class="lyrics-image" onclick="window.open('${song.image}', '_blank')" title="คลิกเพื่อดูภาพขนาดเต็ม">
+                        <img src="${song.image}" alt="${song.title}" class="lyrics-image">
                     </div>
-                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 8px;">💡 คลิกที่รูปภาพเพื่อเปิดดูภาพขนาดเต็ม</p>
                 </div>
             `;
         }
