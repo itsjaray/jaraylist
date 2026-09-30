@@ -66,10 +66,7 @@
             
             for (let i = 0; i < files.length; i++) {
                 const fileName = files[i].name;
-                // ตัดนามสกุลไฟล์ออก (เช่น .png หรือ .jpg) เพื่อเอามาทำเป็นชื่อเพลงเบื้องต้น
-                const songTitle = fileName.substring(0, fileName.lastIndexOf('.')) || fileName;
-                
-                result += `{\n  id: ${Date.now() + i},\n  title: "${songTitle}",\n  image: "images/${fileName}"\n},\n`;
+                result += `    "${fileName}",\n`;
             }
             
             document.getElementById('output').value = result;
