@@ -326,7 +326,7 @@
             touch-action: pan-y;
         }
 
-        /* [จุดที่แก้ไข] Modal สำหรับขยายรูปและซูม */
+        /* Modal สำหรับขยายรูปและซูม */
         .image-modal {
             display: none;
             position: fixed;
@@ -337,7 +337,7 @@
             background: rgba(0, 0, 0, 0.9);
             z-index: 1000;
             justify-content: center;
-            align-items: flex-start; /* เปลี่ยนจาก center เป็น flex-start เพื่อรองรับการเลื่อนยาวๆ */
+            align-items: flex-start;
         }
 
         .image-modal.active {
@@ -346,23 +346,24 @@
 
         .modal-content-wrapper {
             width: 100%;
-            min-height: 100%;
+            height: 100%;
             display: flex;
             justify-content: center;
-            align-items: flex-start; /* จัดชิดบนเพื่อให้เลื่อนขึ้นลงได้ธรรมชาติ */
-            padding: 60px 20px 40px 20px; /* เพิ่มพื้นที่ด้านบนเผื่อปุ่มปิด */
+            align-items: flex-start;
+            padding: 60px 16px 40px 16px;
             box-sizing: border-box;
-            overflow-y: auto; /* ย้ายการ scroll มาไว้ที่ตัว wrapper นี้แทน */
+            overflow-y: auto; /* เปิดให้เลื่อนขึ้นลงในแนวตั้งได้เต็มที่ */
             -webkit-overflow-scrolling: touch;
+            touch-action: pan-y; /* อนุญาตให้เลื่อนจอขึ้นลงได้เต็มที่บนมือถือ/แท็บเล็ต */
         }
 
         .image-modal img {
-            width: 100%;              /* ขยายเต็มความกว้างหน้าจอ */
-            max-width: 800px;         /* จำกัดขนาดสูงสุดไม่ให้กว้างเกินไปบนจอคอม */
-            height: auto;             /* ปรับความสูงตามสัดส่วนจริงของรูปภาพยาวๆ */
+            width: 100%;
+            max-width: 900px;
+            height: auto;
             object-fit: contain;
             border-radius: 8px;
-            touch-action: manipulation;
+            pointer-events: auto;
         }
 
         .close-modal {
@@ -438,9 +439,9 @@
     </div>
 
     <!-- Modal สำหรับขยายรูปและซูม -->
-    <div class="image-modal" id="imageModal" onclick="closeImageModal()">
+    <div class="image-modal" id="imageModal">
         <button class="close-modal" onclick="closeImageModal()">✕</button>
-        <div class="modal-content-wrapper">
+        <div class="modal-content-wrapper" onclick="event.stopPropagation()">
             <img id="modalImg" src="" alt="Zoomed Lyrics">
         </div>
     </div>
