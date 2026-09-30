@@ -385,19 +385,11 @@
                 let album = "Single";
                 let key = "-";
 
-                const matches = [...nameWithoutExt.matchAll(/\(([^)]+)\)/g)];
-                let lastKeyMatch = null;
-                for (let match of matches) {
-                    let content = match[1].trim();
-                    if (/^key\s*/i.test(content)) {
-                        lastKeyMatch = match;
-                    }
-                }
-
-                if (lastKeyMatch) {
-                    let content = lastKeyMatch[1].trim();
-                    key = content.replace(/^key\s*[:\s]*/i, '').trim();
-                    nameWithoutExt = nameWithoutExt.replace(lastKeyMatch[0], '').trim();
+                // ดึงเฉพาะข้อความในวงเล็บ Key มาเก็บไว้ (ยังคงคำว่า Key ไว้ตามเดิม)
+                const keyMatch = nameWithoutExt.match(/\((Key\s*[^)]+)\)/i);
+                if (keyMatch) {
+                    key = keyMatch[1].trim();
+                    nameWithoutExt = nameWithoutExt.replace(keyMatch[0], '').trim();
                 }
 
                 let firstDashIndex = nameWithoutExt.indexOf('-');
@@ -484,10 +476,15 @@
                         <div class="song-title">${song.title}</div>
                         <div class="song-artist">${song.artist} • <span style="color: var(--primary-color);">${song.album}</span></div>
                     </div>
-                    <div class="song-key">Key ${song.key}</div>
+                    <div class="song-key">${song.key}</div>
                 `;
                 item.onclick = () => {
                     selectSong(song.id);
+                    // สั่งซ่อนเมนูด้านซ้ายทันทีเมื่อกดเลือกเพลง
+                    const sidebar = document.getElementById('sidebar');
+                    if (!sidebar.classList.contains('hidden')) {
+                        sidebar.classList.add('hidden');
+                    }
                 };
                 songListEl.appendChild(item);
             });
@@ -506,7 +503,7 @@
                 <div class="lyrics-content">
                     <div class="lyrics-header">
                         <div class="lyrics-header-info" style="flex: 1;">
-                            <h2>${song.title} <span style="color: #f43f5e; font-size: 1rem; font-weight: 500;">(Key ${song.key})</span></h2>
+                            <h2>${song.title} <span style="color: #f43f5e; font-size: 1rem; font-weight: 500;">(${song.key})</span></h2>
                             <p>${song.artist} | ${song.album}</p>
                         </div>
                     </div>
@@ -515,12 +512,6 @@
                     </div>
                 </div>
             `;
-
-            // สั่งซ่อนเมนูด้านซ้ายอัตโนมัติเมื่อกดเลือกเพลง
-            const sidebar = document.getElementById('sidebar');
-            if (!sidebar.classList.contains('hidden')) {
-                sidebar.classList.add('hidden');
-            }
         }
 
         function toggleSidebar() {
