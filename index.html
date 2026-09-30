@@ -523,6 +523,7 @@
 
         function renderCategories() {
             const filterTags = document.getElementById('filterTags');
+            // ดึงรายชื่อศิลปินที่ไม่ซ้ำกันมาทำปุ่ม Filter ตามเดิม
             const artists = [...new Set(songs.map(s => s.artist))];
             
             artists.forEach(artist => {
