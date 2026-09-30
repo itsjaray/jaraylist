@@ -572,7 +572,7 @@
                 item.innerHTML = `
                     <div class="song-info">
                         <div class="song-title">${song.title}</div>
-                        <div class="song-artist">${song.album === 'Medley' ? 'Medley' : `${song.artist} • <span style="color: var(--primary-color);">${song.album}</span>`}</div>
+                        <div class="song-artist">${song.album === 'Medley' ? '<span style="color: var(--primary-color);">Medley</span>' : `${song.artist} • <span style="color: var(--primary-color);">${song.album}</span>`}</div>
                     </div>
                     <div class="song-key">${song.key}</div>
                 `;
