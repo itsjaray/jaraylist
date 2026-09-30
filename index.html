@@ -300,21 +300,6 @@
             display: flex;
             justify-content: center;
             position: relative;
-            cursor: zoom-in;
-        }
-
-        .lyrics-image-container::after {
-            content: "🔍 แตะเพื่อขยาย/ซูม";
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            background: rgba(0, 0, 0, 0.6);
-            color: #fff;
-            padding: 4px 10px;
-            font-size: 0.75rem;
-            border-radius: 4px;
-            pointer-events: none;
-            opacity: 0.8;
         }
 
         .lyrics-image {
@@ -323,50 +308,8 @@
             object-fit: contain;
             border-radius: 6px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            touch-action: pan-y;
         }
 
-        /* Modal สำหรับขยายรูปและซูม */
-        .image-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 1000;
-            justify-content: center;
-            align-items: flex-start;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-            /* ป้องกันไม่ให้การสัมผัสทะลุไปถึงหน้าจอหลัก */
-            overscroll-behavior: contain;
-        }
-
-        .image-modal.active {
-            display: flex;
-        }
-
-        .modal-content-wrapper {
-            width: 100%;
-            min-height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            padding: 40px 16px;
-            box-sizing: border-box;
-        }
-
-        .image-modal img {
-            width: 100%;
-            max-width: 900px;
-            height: auto;
-            object-fit: contain;
-            border-radius: 8px;
-            /* อนุญาตให้ซูมเฉพาะรูปภาพได้ แต่บล็อกการซูมหน้าจอส่วนเกิน */
-            touch-action: pinch-zoom pan-x pan-y; 
-        }
         .empty-state {
             color: var(--text-muted);
             text-align: center;
@@ -421,13 +364,6 @@
         </div>
     </div>
 
-    <!-- Modal สำหรับขยายรูปและซูม (แตะตรงไหนก็ปิดได้) -->
-    <div class="image-modal" id="imageModal" onclick="closeImageModal()">
-        <div class="modal-content-wrapper">
-            <img id="modalImg" src="" alt="Zoomed Lyrics">
-        </div>
-    </div>
-
     <script>
         //ใส่เพลง
         const imageFiles = [
@@ -477,10 +413,9 @@
                 // 2. เช็คว่าเป็น Medley หรือไม่
                 if (nameWithoutExt.toLowerCase().startsWith('medley')) {
                     album = "Medley";
-                    artist = "Medley"; // กำหนดให้ศิลปินเป็น Medley ด้วย เพื่อให้ปุ่ม Filter แสดงผลคำว่า Medley ไม่ว่างเปล่า
+                    artist = "Medley";
                     title = nameWithoutExt;
                 } else {
-                    // เพลงปกติ แยกด้วยขีด (-)
                     let firstDashIndex = nameWithoutExt.indexOf('-');
                     if (firstDashIndex !== -1) {
                         title = nameWithoutExt.substring(0, firstDashIndex).trim();
@@ -509,11 +444,9 @@
 
             // เรียงลำดับตาม Key ของเพลง
             songs.sort((a, b) => {
-                // ฟังก์ชันช่วยจัดน้ำหนักหรือดึงคีย์หลักมาเทียบ (เช่น ถ้ามีคำว่า G ให้ถือว่าอยู่กลุ่ม G)
                 let keyA = a.key;
                 let keyB = b.key;
 
-                // ถ้าคีย์มีคำว่า 'or G' หรือลงท้ายด้วย G ให้ปรับลำดับให้มาอยู่กลุ่ม G
                 if (keyA.includes('or G') || keyA === 'Key G') keyA = 'Key G';
                 if (keyB.includes('or G') || keyB === 'Key G') keyB = 'Key G';
 
@@ -522,7 +455,6 @@
                     return keyCompare;
                 }
                 
-                // ถ้า Key ตรงกัน ให้เรียงตามชื่อเพลงต่อ (A-Z, ก-ฮ)
                 return a.title.localeCompare(b.title, 'th', { 
                     numeric: true, 
                     sensitivity: 'base',
@@ -540,7 +472,6 @@
 
         function renderCategories() {
             const filterTags = document.getElementById('filterTags');
-            // ดึงรายชื่อศิลปินที่ไม่ซ้ำกันมาทำปุ่ม Filter ตามเดิม
             const artists = [...new Set(songs.map(s => s.artist))];
             
             artists.forEach(artist => {
@@ -624,43 +555,12 @@
                             </div>
                         </div>
                     </div>
-                    <div class="lyrics-image-container" onclick="openImageModal('${song.image}')">
+                    <div class="lyrics-image-container">
                         <img src="${song.image}" alt="${song.title}" class="lyrics-image">
                     </div>
                 </div>
             `;
         }
-
-        let isTouchMoved = false;
-
-// บันทึกสถานะว่าผู้ใช้นิ้วขยับหรือเลื่อนจออยู่ไหม
-document.getElementById('imageModal').addEventListener('touchmove', () => {
-    isTouchMoved = true;
-});
-
-document.getElementById('imageModal').addEventListener('touchstart', () => {
-    isTouchMoved = false; // รีเซ็ตตอนเริ่มแตะ
-});
-
-function openImageModal(imgSrc) {
-    const modal = document.getElementById('imageModal');
-    const modalImg = document.getElementById('modalImg');
-    modalImg.src = imgSrc;
-    modal.classList.add('active');
-    document.body.style.overflow = 'hidden'; // ล็อกหน้าจอหลัก
-}
-
-function closeImageModal() {
-    // ถ้าผู้ใช้ใช้นิ้วเลื่อนดูรูปอยู่ จะไม่สั่งปิด ให้ถือว่าเป็นการเลื่อนอ่านเนื้อเพลง
-    if (isTouchMoved) {
-        isTouchMoved = false;
-        return;
-    }
-    
-    const modal = document.getElementById('imageModal');
-    modal.classList.remove('active');
-    document.body.style.overflow = ''; // คืนค่าหน้าจอหลัก
-}
 
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
