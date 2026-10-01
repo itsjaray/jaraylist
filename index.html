@@ -894,6 +894,25 @@
             `;
         }
 
+        function clearAllTabs() {
+            // เคลียร์ค่าตัวแปรแท็บทั้งหมด
+            openTabs = [];
+            activeTabId = null;
+    
+            // ล้างข้อมูลใน localStorage ที่เซฟไว้
+            localStorage.removeItem('jaray_openTabs');
+            localStorage.removeItem('jaray_activeTabId');
+    
+            // อัปเดตหน้าจอเพื่อซ่อนแผงเนื้อเพลง
+            renderLyricsPanel();
+            
+            // บังคับเปิด Sidebar กลับมา (ถ้าต้องการให้หน้าจอหลักกลับมาแสดงปกติ)
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar) {
+                sidebar.classList.remove('hidden');
+            }
+        }
+
         function openModal(imageSrc, imageAlt) {
             const modal = document.getElementById('imageModal');
             const modalImg = document.getElementById('modalImage');
