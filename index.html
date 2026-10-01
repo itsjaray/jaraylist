@@ -354,7 +354,6 @@
             border-radius: 4px;
             font-weight: 600;
         }
-        /* ขยายพื้นที่และขนาดปุ่มปิดให้กดง่ายบน iPad นิ้วจิ้มโดนแน่นอน */
         .tab-close {
             font-size: 0.85rem;
             width: 22px;
@@ -774,6 +773,9 @@
                     activeTabId = openTabs[Math.min(index, openTabs.length - 1)];
                 } else {
                     activeTabId = null;
+                    // 👉 ถ้าเผลอกดปิด tabs จนหมด ให้เมนูด้านซ้ายเด้งกลับมาโชว์อัตโนมัติ
+                    const sidebar = document.getElementById('sidebar');
+                    sidebar.classList.remove('hidden');
                 }
             }
             renderLyricsPanel();
@@ -819,7 +821,7 @@
                             ${tabsHtml}
                         </div>
                         <div class="toolbar-row">
-                            <button onclick="toggleSidebar()">📋 เมนู</button>
+                            <button onclick="toggleSidebar()">📋 เมนูเพลง</button>
                         </div>
                     </div>
 
