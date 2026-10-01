@@ -81,13 +81,37 @@
             border-radius: 4px;
             font-size: 0.8rem;
         }
-        /* ธีมโหมดสว่าง */
+        /* เพิ่ม CSS สำหรับรองรับโหมดสว่างในหน้า setlist.html */
         body.light-mode {
-            --bg-color: #f8fafc;
-            --card-bg: #ffffff;
-            --text-color: #0f172a;
-            --text-muted: #64748b;
-            --border-color: #e2e8f0;
+            background-color: #f8fafc !important;
+            color: #0f172a !important;
+        }
+
+        body.light-mode .header-container h2 {
+            color: #0f172a !important;
+        }
+
+        body.light-mode .category-box {
+            background-color: #ffffff !important;
+            border-color: #e2e8f0 !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        body.light-mode .category-title {
+            color: #0f172a !important;
+            border-bottom-color: #e2e8f0 !important;
+        }
+
+        body.light-mode .song-item {
+            background-color: #f8fafc !important;
+            border-color: #e2e8f0 !important;
+            color: #0f172a !important;
+        }
+
+        body.light-mode .back-btn {
+            background-color: #ffffff !important;
+            color: #0f172a !important;
+            border: 1px solid #cbd5e1 !important;
         }
     </style>
 </head>
