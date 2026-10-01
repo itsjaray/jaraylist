@@ -340,10 +340,7 @@
             transition: transform 0.2s ease;
         }
 
-        .lyrics-image-container:hover .lyrics-image {
-            opacity: 0.95;
-        }
-
+        /* ปรับปรุง Modal ให้รองรับการซูมและเลื่อนดูได้ครบถ้วนโดยไม่โดนตัด */
         .image-modal {
             display: none;
             position: fixed;
@@ -354,35 +351,36 @@
             height: 100%;
             background-color: rgba(0, 0, 0, 0.9);
             backdrop-filter: blur(5px);
-            justify-content: center;
-            align-items: center;
-            overflow: auto;
+            overflow: auto; /* อนุญาตให้ scroll ทั้งหน้าจอ modal ได้ */
             -webkit-overflow-scrolling: touch;
         }
 
         .image-modal.active {
-            display: flex;
+            display: block; /* เปลี่ยนจาก flex เป็น block เพื่อให้ scroll แนวตั้งและนอนทำงานสมบูรณ์ */
         }
 
         .modal-content-wrapper {
             position: relative;
+            min-height: 100%;
             width: 100%;
-            height: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow: auto;
             padding: 40px 20px;
+            box-sizing: border-box;
         }
 
         .modal-image {
-            max-width: 100%;
+            max-width: 90vw;
+            max-height: 85vh;
+            width: auto;
             height: auto;
             object-fit: contain;
             border-radius: 4px;
-            cursor: zoom-out;
+            cursor: zoom-in;
             transform-origin: center center;
-            transition: transform 0.1s ease-out;
+            transition: transform 0.2s ease-out;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
         }
 
         .close-modal-btn {
@@ -700,6 +698,7 @@
             modalImg.alt = imageAlt;
             isZoomed = false;
             modalImg.style.transform = 'scale(1)';
+            modalImg.style.cursor = 'zoom-in';
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
         }
@@ -708,7 +707,7 @@
             event.stopPropagation();
             const modalImg = document.getElementById('modalImage');
             if (!isZoomed) {
-                modalImg.style.transform = 'scale(2)';
+                modalImg.style.transform = 'scale(2.2)';
                 modalImg.style.cursor = 'zoom-out';
                 isZoomed = true;
             } else {
