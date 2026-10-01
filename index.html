@@ -280,13 +280,30 @@
             flex-direction: column;
         }
 
-        /* แถบ Tab จำลองสไตล์ GoodReader บริเวณหัวข้อเนื้อเพลง (ตรงกรอบสีเขียว) */
+        /* แถบ Tab บริเวณหัวข้อเนื้อเพลงด้านบนสุด */
+        .lyrics-header {
+            position: sticky;
+            top: -24px;
+            background-color: var(--card-bg);
+            margin: -24px -24px 16px -24px;
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 5;
+            box-shadow: 0 4px 6px -2px rgba(0,0,0,0.05);
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+        }
+
         .tabs-bar {
             display: flex;
             gap: 6px;
             overflow-x: auto;
-            max-width: 100%;
-            padding-bottom: 4px;
+            flex: 1;
+            padding-bottom: 2px;
             scrollbar-width: thin;
         }
         .tabs-bar::-webkit-scrollbar {
@@ -307,9 +324,9 @@
             cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
             white-space: nowrap;
-            max-width: 180px;
+            max-width: 240px;
             overflow: hidden;
             text-overflow: ellipsis;
             box-shadow: none;
@@ -325,6 +342,14 @@
             font-weight: 600;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
+        .tab-key {
+            font-size: 0.75rem;
+            color: #f43f5e;
+            background: rgba(244, 63, 94, 0.1);
+            padding: 1px 5px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
         .tab-close {
             font-size: 0.75rem;
             padding: 2px;
@@ -334,45 +359,6 @@
         .tab-close:hover {
             background: rgba(244, 63, 94, 0.15);
             color: #f43f5e;
-        }
-
-        .lyrics-header {
-            position: sticky;
-            top: -24px;
-            background-color: var(--card-bg);
-            margin: -24px -24px 16px -24px;
-            padding: 16px 24px;
-            border-bottom: 1px solid var(--border-color);
-            flex-shrink: 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 5;
-            box-shadow: 0 4px 6px -2px rgba(0,0,0,0.05);
-            border-top-left-radius: 16px;
-            border-top-right-radius: 16px;
-        }
-
-        .lyrics-header-left {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .lyrics-header-info {
-            text-align: left;
-        }
-
-        .lyrics-header h2 {
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 2px;
-        }
-
-        .lyrics-header p {
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            font-weight: 300;
         }
 
         .lyrics-image-container {
@@ -737,7 +723,6 @@
 
             if (activeTabId === id) {
                 if (openTabs.length > 0) {
-                    // เปิดแท็บถัดไปที่มีอยู่ หรือแท็บสุดท้าย
                     activeTabId = openTabs[Math.min(index, openTabs.length - 1)];
                 } else {
                     activeTabId = null;
@@ -766,14 +751,15 @@
             const song = songs.find(s => s.id === activeTabId);
             if (!song) return;
 
-            // สร้าง HTML ของแท็บทั้งหมด
+            // สร้าง HTML ของแท็บทั้งหมด พร้อมแสดงชื่อเพลงและ Key
             let tabsHtml = openTabs.map(tabId => {
                 const s = songs.find(item => item.id === tabId);
                 if (!s) return '';
                 const isActive = (tabId === activeTabId) ? 'active' : '';
                 return `
-                    <button class="song-tab ${isActive}" onclick="openSongTab(${s.id})" title="${s.title}">
+                    <button class="song-tab ${isActive}" onclick="openSongTab(${s.id})" title="${s.title} (${s.key})">
                         <span>${s.title}</span>
+                        <span class="tab-key">${s.key}</span>
                         <span class="tab-close" onclick="closeSongTab(${s.id}, event)">✕</span>
                     </button>
                 `;
@@ -782,13 +768,9 @@
             panel.innerHTML = `
                 <div class="lyrics-content">
                     <div class="lyrics-header">
-                        <div class="lyrics-header-left" style="width: 100%; justify-content: space-between;">
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <button onclick="toggleSidebar()">📋 เมนู</button>
-                                <div class="tabs-bar">
-                                    ${tabsHtml}
-                                </div>
-                            </div>
+                        <button onclick="toggleSidebar()">📋 เมนู</button>
+                        <div class="tabs-bar">
+                            ${tabsHtml}
                         </div>
                     </div>
                     <div class="lyrics-image-container" onclick="openModal('${song.image}', '${song.title}')">
