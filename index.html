@@ -157,21 +157,27 @@
 
         .clear-search-btn {
             position: absolute;
-            right: 26px;
+            right: 14px;
             top: 50%;
             transform: translateY(-50%);
-            background: none;
+            background: rgba(255, 255, 255, 0.05);
             border: none;
             color: var(--text-muted);
             cursor: pointer;
-            font-size: 1rem;
-            padding: 4px;
+            font-size: 1.1rem;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
             display: none;
+            justify-content: center;
+            align-items: center;
             box-shadow: none;
+            transition: all 0.2s;
         }
 
         .clear-search-btn:hover {
             color: var(--text-color);
+            background: rgba(255, 255, 255, 0.15);
             border: none;
         }
 
