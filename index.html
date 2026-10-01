@@ -828,7 +828,8 @@
                     <div class="lyrics-header">
                         <div>
                             <h2>${song.title}</h2>
-                            <p>${song.album === 'Medley' ? 'Medley' : `${song.artist} •${song.album}`}</p>
+                            <!-- 👉 แก้ไขตรงนี้ให้ใส่ span หุ้ม ${song.album} เพื่อกำหนดสีฟ้า -->
+                            <p>${song.album === 'Medley' ? 'Medley' : `${song.artist} • <span style="color: var(--primary-color);">${song.album}</span>`}</p>
                         </div>
                         <div class="song-key-badge">${song.key}</div>
                     </div>
