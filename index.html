@@ -319,6 +319,34 @@
             font-weight: 300;
         }
 
+        /* จัดสไตล์ปุ่มเพิ่มเพลงถัดไปให้อยู่ตำแหน่งกรอบสีเขียวมุมขวาบน */
+        .lyrics-header-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .add-next-btn {
+            background-color: var(--primary-color);
+            color: #fff;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            box-shadow: 0 2px 4px rgba(99, 102, 241, 0.2);
+        }
+
+        .add-next-btn:hover {
+            background-color: var(--primary-hover);
+            color: #fff;
+            border-color: transparent;
+        }
+
         .lyrics-image-container {
             width: 100%;
             background: rgba(0,0,0,0.015);
@@ -339,7 +367,7 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
 
-        /* Modal สำหรับแสดงภาพแบบเต็มจอ และคลิกซ้ำเพื่อปิดได้ทันที */
+        /* Modal สำหรับแสดงภาพแบบเต็มจอ และคลิกที่รูปเพื่อปิด */
         .image-modal {
             display: none;
             position: fixed;
@@ -376,7 +404,7 @@
             height: auto;
             object-fit: contain;
             border-radius: 4px;
-            cursor: pointer; /* เปลี่ยนเคอร์เซอร์เป็นรูปคลิกได้เพื่อสื่อว่าคลิกปิดได้ */
+            cursor: pointer;
             box-shadow: 0 8px 24px rgba(0,0,0,0.5);
         }
 
@@ -472,6 +500,7 @@
     </div>
 
     <script>
+        //ใส่เพลง
         const imageFiles = [
                 "[กลาง] ช่วยไม่ได้ (CAN'T HELP) - URBOYTJ - SELFMADE (Key B).png",
                 "[เร็ว] ด้วยรักและฟัคยู - HYE FT. GAVIN.D - Single (Key A). GAVIN.D - Single (Key A).png",
@@ -679,12 +708,30 @@
                                 <p>${song.artist} | ${song.album}</p>
                             </div>
                         </div>
+                        <div class="lyrics-header-right">
+                            <button class="add-next-btn" onclick="openAddNextModal()">➕ เพิ่มเนื้อเพลงถัดไป</button>
+                        </div>
                     </div>
                     <div class="lyrics-image-container" onclick="openModal('${song.image}', '${song.title}')">
                         <img src="${song.image}" alt="${song.title}" class="lyrics-image">
                     </div>
                 </div>
             `;
+        }
+
+        // ฟังก์ชันสำหรับเปิดหน้าต่างเลือกเพลงเพื่อเพิ่ม/จัดการ (สามารถปรับแต่งต่อยอดได้ตามต้องการ)
+        function openAddNextModal() {
+            let songTitles = songs.map(s => `${s.id}. ${s.title} (${s.key})`).join('\n');
+            let chosen = prompt("เลือกเพลงถัดไปโดยใส่หมายเลขเพลง (ID):\n\n" + songTitles);
+            if (chosen) {
+                let songId = parseInt(chosen);
+                let targetSong = songs.find(s => s.id === songId);
+                if (targetSong) {
+                    selectSong(targetSong.id);
+                } else {
+                    alert("ไม่พบหมายเลขเพลงที่ระบุ");
+                }
+            }
         }
 
         function openModal(imageSrc, imageAlt) {
