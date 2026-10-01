@@ -454,6 +454,9 @@
             songs = imageFiles.map((filename, index) => {
                 let nameWithoutExt = filename.substring(0, filename.lastIndexOf('.')) || filename;
                 
+                // ตัดคำนำหน้าประเภทเพลง เช่น [ช้า], [กลาง], [เร็ว], [สากล] ออก
+                nameWithoutExt = nameWithoutExt.replace(/^\[.*?\]\s*/, '');
+                
                 let title = nameWithoutExt;
                 let artist = "Unknown Artist";
                 let album = "Single";
