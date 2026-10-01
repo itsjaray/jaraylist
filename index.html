@@ -151,20 +151,22 @@
 
         .clear-search-btn {
             position: absolute;
-            right: 12px;
+            right: 10px;
             top: 50%;
             transform: translateY(-50%);
             background: rgba(255, 255, 255, 0.08);
             border: none;
             color: var(--text-muted);
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             width: 24px;
             height: 24px;
             border-radius: 50%;
             display: none;
             justify-content: center;
             align-items: center;
+            line-height: 1; /* ช่วยบังคับให้ตัวอักษรอยู่ตรงกลางแนวตั้ง */
+            padding: 0;     /* ป้องกัน padding ส่วนเกินดันตัวอักษรหลุด */
             transition: all 0.2s;
         }
 
