@@ -349,6 +349,34 @@
             box-shadow: none;
             user-select: none;
         }
+
+        .song-tab.active {
+            background-color: var(--primary-color);
+            color: #ffffff;
+            border-color: var(--primary-color);
+            font-weight: 500;
+        }
+        .song-tab.active .tab-key {
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+        }
+        .song-tab.active .tab-close {
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+        }
+        .song-tab.active .tab-close:hover {
+            background: rgba(239, 68, 68, 0.8);
+            color: #ffffff;
+        }
+        .song-tab.active .tab-move {
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+        }
+        .song-tab.active .tab-move:hover {
+            background: rgba(0, 0, 0, 0.2);
+            color: #ffffff;
+        }
+        
         .song-tab:active {
             cursor: grabbing;
         }
