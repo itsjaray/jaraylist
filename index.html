@@ -280,8 +280,8 @@
             flex-direction: column;
         }
 
-        /* แถบ Tab บริเวณหัวข้อเนื้อเพลงด้านบนสุด */
-        .lyrics-header {
+        /* แถบ Tabs อยู่ด้านบนสุด เหนือปุ่มเมนูตามที่คุณต้องการ */
+        .top-tabs-container {
             position: sticky;
             top: -24px;
             background-color: var(--card-bg);
@@ -290,8 +290,8 @@
             border-bottom: 1px solid var(--border-color);
             flex-shrink: 0;
             display: flex;
-            align-items: center;
-            gap: 12px;
+            flex-direction: column;
+            gap: 10px;
             z-index: 5;
             box-shadow: 0 4px 6px -2px rgba(0,0,0,0.05);
             border-top-left-radius: 16px;
@@ -302,8 +302,8 @@
             display: flex;
             gap: 6px;
             overflow-x: auto;
-            flex: 1;
-            padding-bottom: 2px;
+            width: 100%;
+            padding-bottom: 4px;
             scrollbar-width: thin;
         }
         .tabs-bar::-webkit-scrollbar {
@@ -359,6 +359,45 @@
         .tab-close:hover {
             background: rgba(244, 63, 94, 0.15);
             color: #f43f5e;
+        }
+
+        .toolbar-row {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        /* ส่วนหัวข้อแสดงชื่อเพลงและศิลปินดั้งเดิมกลับมาแล้ว */
+        .lyrics-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+            text-align: left;
+        }
+
+        .lyrics-header h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .lyrics-header p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 300;
+        }
+
+        .song-key-badge {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #f43f5e;
+            background: rgba(244, 63, 94, 0.1);
+            padding: 6px 12px;
+            border-radius: 8px;
+            letter-spacing: 0.02em;
         }
 
         .lyrics-image-container {
@@ -751,7 +790,7 @@
             const song = songs.find(s => s.id === activeTabId);
             if (!song) return;
 
-            // สร้าง HTML ของแท็บทั้งหมด พร้อมแสดงชื่อเพลงและ Key
+            // สร้าง HTML ของแท็บทั้งหมด (สำหรับวางไว้ด้านบนสุดเหนือปุ่มเมนู)
             let tabsHtml = openTabs.map(tabId => {
                 const s = songs.find(item => item.id === tabId);
                 if (!s) return '';
@@ -767,12 +806,26 @@
 
             panel.innerHTML = `
                 <div class="lyrics-content">
-                    <div class="lyrics-header">
-                        <button onclick="toggleSidebar()">📋 เมนู</button>
+                    <!-- แถบ Tabs และปุ่มเมนูด้านบนสุด -->
+                    <div class="top-tabs-container">
                         <div class="tabs-bar">
                             ${tabsHtml}
                         </div>
+                        <div class="toolbar-row">
+                            <button onclick="toggleSidebar()">📋 เมนู</button>
+                        </div>
                     </div>
+
+                    <!-- ส่วนหัวข้อชื่อเพลงและศิลปิน (แบบเดิมกลับมาแล้ว) -->
+                    <div class="lyrics-header">
+                        <div>
+                            <h2>${song.title}</h2>
+                            <p>${song.album === 'Medley' ? 'Medley' : `${song.artist} •${song.album}`}</p>
+                        </div>
+                        <div class="song-key-badge">${song.key}</div>
+                    </div>
+
+                    <!-- รูปภาพเนื้อเพลง -->
                     <div class="lyrics-image-container" onclick="openModal('${song.image}', '${song.title}')">
                         <img src="${song.image}" alt="${song.title}" class="lyrics-image">
                     </div>
