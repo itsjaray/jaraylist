@@ -246,6 +246,18 @@
                 }
             });
 
+            // จัดเรียงลำดับเพลงในแต่ละหมวดหมู่ (เรียงตาม Key ก่อน แล้วตามด้วยตัวอักษรชื่อเพลง A-Z)
+            for (let catName in categories) {
+                categories[catName].sort((a, b) => {
+                    if (a.key !== b.key) {
+                        if (a.key === "-") return 1;  // ให้เพลงที่ไม่มี Key ไปอยู่ท้ายสุด
+                        if (b.key === "-") return -1;
+                        return a.key.localeCompare(b.key);
+                    }
+                    return a.title.localeCompare(b.title, 'th');
+                });
+            }
+
             const tabsContainer = document.getElementById('tabsContainer');
             const contentContainer = document.getElementById('contentContainer');
             
@@ -294,11 +306,9 @@
         }
 
         function switchTab(tabId, btnElement) {
-            // ซ่อนเนื้อหาทั้งหมดและปิดแอคทีฟปุ่ม
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
 
-            // เปิดแสดงแท็บที่เลือก
             document.getElementById(tabId).classList.add('active');
             btnElement.classList.add('active');
         }
