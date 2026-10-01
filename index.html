@@ -280,6 +280,62 @@
             flex-direction: column;
         }
 
+        /* แถบ Tab จำลองสไตล์ GoodReader บริเวณหัวข้อเนื้อเพลง (ตรงกรอบสีเขียว) */
+        .tabs-bar {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            max-width: 100%;
+            padding-bottom: 4px;
+            scrollbar-width: thin;
+        }
+        .tabs-bar::-webkit-scrollbar {
+            height: 4px;
+        }
+        .tabs-bar::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        .song-tab {
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+            max-width: 180px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            box-shadow: none;
+        }
+        .song-tab:hover {
+            color: var(--text-color);
+            border-color: var(--primary-color);
+        }
+        .song-tab.active {
+            background: var(--card-bg);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            font-weight: 600;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .tab-close {
+            font-size: 0.75rem;
+            padding: 2px;
+            border-radius: 50%;
+            line-height: 1;
+        }
+        .tab-close:hover {
+            background: rgba(244, 63, 94, 0.15);
+            color: #f43f5e;
+        }
+
         .lyrics-header {
             position: sticky;
             top: -24px;
@@ -317,34 +373,6 @@
             color: var(--text-muted);
             font-size: 0.85rem;
             font-weight: 300;
-        }
-
-        /* จัดสไตล์ปุ่มเพิ่มเพลงถัดไปให้อยู่ตำแหน่งกรอบสีเขียวมุมขวาบน */
-        .lyrics-header-right {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .add-next-btn {
-            background-color: var(--primary-color);
-            color: #fff;
-            border: none;
-            padding: 8px 14px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            box-shadow: 0 2px 4px rgba(99, 102, 241, 0.2);
-        }
-
-        .add-next-btn:hover {
-            background-color: var(--primary-hover);
-            color: #fff;
-            border-color: transparent;
         }
 
         .lyrics-image-container {
@@ -500,7 +528,6 @@
     </div>
 
     <script>
-        //ใส่เพลง
         const imageFiles = [
                 "[กลาง] ช่วยไม่ได้ (CAN'T HELP) - URBOYTJ - SELFMADE (Key B).png",
                 "[เร็ว] ด้วยรักและฟัคยู - HYE FT. GAVIN.D - Single (Key A). GAVIN.D - Single (Key A).png",
@@ -548,6 +575,8 @@
 
         let songs = [];
         let selectedCategory = 'All';
+        let openTabs = [];      // เก็บรายการ ID เพลงที่เปิดเป็นแท็บไว้
+        let activeTabId = null; // ID ของเพลงที่กำลังแสดงอยู่ปัจจุบัน
 
         function parseSongsFromFilenames() {
             songs = imageFiles.map((filename, index) => {
@@ -679,7 +708,7 @@
                     <div class="song-key">${song.key}</div>
                 `;
                 item.onclick = () => {
-                    selectSong(song.id);
+                    openSongTab(song.id);
                     const sidebar = document.getElementById('sidebar');
                     if (!sidebar.classList.contains('hidden')) {
                         sidebar.classList.add('hidden');
@@ -689,27 +718,77 @@
             });
         }
 
-        function selectSong(id) {
+        // จัดการเปิดเพลงในระบบ Tab
+        function openSongTab(id) {
+            if (!openTabs.includes(id)) {
+                openTabs.push(id);
+            }
+            activeTabId = id;
+            renderLyricsPanel();
+        }
+
+        // ปิด Tab
+        function closeSongTab(id, event) {
+            event.stopPropagation(); // ป้องกันไม่ให้คลิกแล้วเป็นการเปิดเพลงนั้น
+            const index = openTabs.indexOf(id);
+            if (index !== -1) {
+                openTabs.splice(index, 1);
+            }
+
+            if (activeTabId === id) {
+                if (openTabs.length > 0) {
+                    // เปิดแท็บถัดไปที่มีอยู่ หรือแท็บสุดท้าย
+                    activeTabId = openTabs[Math.min(index, openTabs.length - 1)];
+                } else {
+                    activeTabId = null;
+                }
+            }
+            renderLyricsPanel();
+        }
+
+        function renderLyricsPanel() {
             document.querySelectorAll('.song-item').forEach(el => el.classList.remove('active'));
-            const activeItem = document.getElementById(`song-item-${id}`);
+            
+            const panel = document.getElementById('lyricsPanel');
+
+            if (openTabs.length === 0 || activeTabId === null) {
+                panel.innerHTML = `
+                    <div class="empty-state">
+                        <p>👈 กรุณาเลือกเพลงจากเมนูด้านซ้ายเพื่อดูเนื้อเพลง</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const activeItem = document.getElementById(`song-item-${activeTabId}`);
             if (activeItem) activeItem.classList.add('active');
 
-            const song = songs.find(s => s.id === id);
+            const song = songs.find(s => s.id === activeTabId);
             if (!song) return;
 
-            const panel = document.getElementById('lyricsPanel');
+            // สร้าง HTML ของแท็บทั้งหมด
+            let tabsHtml = openTabs.map(tabId => {
+                const s = songs.find(item => item.id === tabId);
+                if (!s) return '';
+                const isActive = (tabId === activeTabId) ? 'active' : '';
+                return `
+                    <button class="song-tab ${isActive}" onclick="openSongTab(${s.id})" title="${s.title}">
+                        <span>${s.title}</span>
+                        <span class="tab-close" onclick="closeSongTab(${s.id}, event)">✕</span>
+                    </button>
+                `;
+            }).join('');
+
             panel.innerHTML = `
                 <div class="lyrics-content">
                     <div class="lyrics-header">
-                        <div class="lyrics-header-left">
-                            <button onclick="toggleSidebar()">📋 เมนูเพลง</button>
-                            <div class="lyrics-header-info">
-                                <h2>${song.title} <span style="color: #f43f5e; font-size: 1rem; font-weight: 500;">(${song.key})</span></h2>
-                                <p>${song.artist} | ${song.album}</p>
+                        <div class="lyrics-header-left" style="width: 100%; justify-content: space-between;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <button onclick="toggleSidebar()">📋 เมนู</button>
+                                <div class="tabs-bar">
+                                    ${tabsHtml}
+                                </div>
                             </div>
-                        </div>
-                        <div class="lyrics-header-right">
-                            <button class="add-next-btn" onclick="openAddNextModal()">➕ เพิ่มเนื้อเพลงถัดไป</button>
                         </div>
                     </div>
                     <div class="lyrics-image-container" onclick="openModal('${song.image}', '${song.title}')">
@@ -717,21 +796,6 @@
                     </div>
                 </div>
             `;
-        }
-
-        // ฟังก์ชันสำหรับเปิดหน้าต่างเลือกเพลงเพื่อเพิ่ม/จัดการ (สามารถปรับแต่งต่อยอดได้ตามต้องการ)
-        function openAddNextModal() {
-            let songTitles = songs.map(s => `${s.id}. ${s.title} (${s.key})`).join('\n');
-            let chosen = prompt("เลือกเพลงถัดไปโดยใส่หมายเลขเพลง (ID):\n\n" + songTitles);
-            if (chosen) {
-                let songId = parseInt(chosen);
-                let targetSong = songs.find(s => s.id === songId);
-                if (targetSong) {
-                    selectSong(targetSong.id);
-                } else {
-                    alert("ไม่พบหมายเลขเพลงที่ระบุ");
-                }
-            }
         }
 
         function openModal(imageSrc, imageAlt) {
