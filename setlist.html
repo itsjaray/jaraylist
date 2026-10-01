@@ -117,31 +117,31 @@
             // นำรายชื่อไฟล์เพลงของคุณมาใส่ไว้ที่นี่ หรือใช้ชุดเดียวกับ index.html
         ];
 
-        // ฟังก์ชันแปลงชื่อไฟล์ให้เป็นข้อมูลเพลง
         function parseSongs() {
             return imageFiles.map((filename, index) => {
                 let nameWithoutExt = filename.substring(0, filename.lastIndexOf('.')) || filename;
                 let title = nameWithoutExt;
                 let key = "-";
+                let category = "🚶 เพลงจังหวะกลาง"; // ค่าเริ่มต้น
                 
-                // ดึง Key ออกมา (ถ้ามีในวงเล็บ)
-                const keyMatch = nameWithoutExt.match(/\((Key[^)]+)\)/i);
-                if (keyMatch) {
-                    key = keyMatch[1].trim();
-                    title = nameWithoutExt.replace(keyMatch[0], '').trim();
+                // 1. ดึงหมวดหมู่จากวงเล็บหน้าสุด เช่น [ช้า], [กลาง], [เร็ว], [สากล]
+                const categoryMatch = nameWithoutExt.match(/^\[(.*?)\]/);
+                if (categoryMatch) {
+                    let catText = categoryMatch[1].trim();
+                    if (catText.includes("ช้า")) category = "🐢 เพลงช้า";
+                    else if (catText.includes("กลาง")) category = "🚶 เพลงจังหวะกลาง";
+                    else if (catText.includes("เร็ว")) category = "🔥 เพลงเร็ว";
+                    else if (catText.includes("สากล")) category = "🌍 สากล";
+                    
+                    // ตัดวงวดหมู่ออกเพื่อให้เหลือแค่ชื่อเพลงจริง ๆ
+                    title = nameWithoutExt.replace(categoryMatch[0], '').trim();
                 }
 
-                // จำแนกหมวดหมู่ตัวอย่างเบื้องต้น (สามารถเปลี่ยนเงื่อนไขการแยกหมวดหมู่ได้ตามต้องการ)
-                let category = "เพลงกลาง";
-                let lowerTitle = title.toLowerCase();
-                if (lowerTitle.includes("ช้า") || lowerTitle.includes("เศร้า")) {
-                    category = "🐢 เพลงช้า";
-                } else if (lowerTitle.includes("เร็ว") / lowerTitle.includes("แดนซ์") || lowerTitle.includes("it's") || lowerTitle.includes("fein")) {
-                    category = "🔥 เพลงเร็ว";
-                } else if (lowerTitle.includes("สากล") || /^[a-zA-Z\s\-]+$/.test(title)) {
-                    category = "🌍 สากล";
-                } else {
-                    category = "🚶 เพลงจังหวะกลาง";
+                // 2. ดึง Key ออกมา (ถ้ามีในวงเล็บท้ายชื่อ)
+                const keyMatch = title.match(/\((Key\s*[^)]+)\)/i);
+                if (keyMatch) {
+                    key = keyMatch[1].trim();
+                    title = title.replace(keyMatch[0], '').trim();
                 }
 
                 return { id: index + 1, title: title, key: key, category: category };
