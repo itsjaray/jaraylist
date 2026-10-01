@@ -633,11 +633,23 @@
             if (currentTheme === 'dark') {
                 body.setAttribute('data-theme', 'light');
                 btn.innerText = '🌙 โหมดมืด';
+                localStorage.setItem('theme', 'light'); // บันทึกค่าโหมดสว่าง
             } else {
                 body.setAttribute('data-theme', 'dark');
                 btn.innerText = '☀️ โหมดสว่าง';
+                localStorage.setItem('theme', 'dark'); // บันทึกค่าโหมดมืด
             }
         }
+
+        // โหลดค่าธีมที่บันทึกไว้ทันทีตอนเปิดหน้าหลัก
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') {
+                document.body.setAttribute('data-theme', 'light');
+                const btn = document.getElementById('themeToggleBtn');
+                if (btn) btn.innerText = '🌙 โหมดมืด';
+            }
+        });
 
         // จัดการการแสดงปุ่มกากบาทและกรองข้อมูลเมื่อพิมพ์
         function handleSearchInput() {
