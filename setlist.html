@@ -81,37 +81,22 @@
             border-radius: 4px;
             font-size: 0.8rem;
         }
-        /* โค้ดรองรับโหมดสว่างสำหรับหน้า setlist.html */
-        body.light-mode {
-            background-color: #f8fafc !important;
-            color: #0f172a !important;
+        [data-theme="light"] {
+            --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --primary-color: #6366f1;
         }
 
-        body.light-mode h2 {
-            color: #0f172a !important;
-        }
-
-        body.light-mode .category-box {
-            background-color: #ffffff !important;
-            border-color: #e2e8f0 !important;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-        }
-
-        body.light-mode .category-title {
-            color: #0f172a !important;
-            border-bottom-color: #e2e8f0 !important;
-        }
-
-        body.light-mode .song-item {
-            background-color: #f8fafc !important;
-            border-color: #e2e8f0 !important;
-            color: #0f172a !important;
-        }
-
-        body.light-mode .back-btn {
-            background-color: #ffffff !important;
-            color: #0f172a !important;
-            border: 1px solid #cbd5e1 !important;
+        [data-theme="dark"] {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --primary-color: #818cf8;
         }
     </style>
 </head>
@@ -234,9 +219,9 @@
             }
         }
 
-        // เรียกใช้งานตอนโหลดหน้าเว็บ
         window.addEventListener('DOMContentLoaded', () => {
-            applySavedTheme();
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.body.setAttribute('data-theme', savedTheme);
             renderCategories();
         });
         
