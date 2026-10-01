@@ -95,10 +95,7 @@
 
     <div class="header-container">
         <h2>🎵 หมวดหมู่เซ็ตลิสต์เพลง</h2>
-        <div style="display: flex; gap: 10px; align-items: center;">
-            <button id="themeToggleButton" onclick="toggleTheme()" style="background: var(--card-bg); color: var(--text-color); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-family: 'Prompt', sans-serif; font-size: 0.9rem;">☀️ โหมดสว่าง</button>
-            <a href="index.html" class="back-btn">⬅️ กลับหน้าหลัก</a>
-        </div>
+        <a href="index.html" class="back-btn">⬅️ กลับหน้าหลัก</a>
     </div>
 
     <div class="container" id="categoryContainer">
@@ -203,16 +200,13 @@
             }
         }
 
-        // ตรวจสอบและโหลดธีมที่เคยเลือกไว้ตอนเปิดหน้าเว็บ
+        // ตรวจสอบและซิงค์ธีมจากหน้าหลักอัตโนมัติ
         function applySavedTheme() {
             const savedTheme = localStorage.getItem('theme');
-            const btn = document.getElementById('themeToggleButton');
             if (savedTheme === 'light') {
                 document.body.classList.add('light-mode');
-                if (btn) btn.textContent = '🌙 โหมดมืด';
             } else {
                 document.body.classList.remove('light-mode');
-                if (btn) btn.textContent = '☀️ โหมดสว่าง';
             }
         }
 
