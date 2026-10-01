@@ -322,24 +322,21 @@
             padding: 6px 10px 6px 12px;
             border-radius: 8px;
             font-size: 0.85rem;
-            cursor: pointer;
+            cursor: grab; /* เปลี่ยนเคอร์เซอร์เป็นรูปมือจับ */
             display: inline-flex;
             align-items: center;
             gap: 8px;
             white-space: nowrap;
             flex-shrink: 0;
             box-shadow: none;
+            user-select: none;
         }
-        .song-tab:hover {
-            color: var(--text-color);
-            border-color: var(--primary-color);
+        .song-tab:active {
+            cursor: grabbing;
         }
-        .song-tab.active {
-            background: var(--card-bg);
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-            font-weight: 600;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        .song-tab.dragging {
+            opacity: 0.4;
+            border: 2px dashed var(--primary-color);
         }
         .tab-name {
             max-width: 140px;
@@ -801,16 +798,22 @@
             const song = songs.find(s => s.id === activeTabId);
             if (!song) return;
 
-            let tabsHtml = openTabs.map(tabId => {
+            let tabsHtml = openTabs.map((tabId, index) => {
                 const s = songs.find(item => item.id === tabId);
                 if (!s) return '';
                 const isActive = (tabId === activeTabId) ? 'active' : '';
                 return `
-                    <button class="song-tab ${isActive}" onclick="openSongTab(${s.id})" title="${s.title} (${s.key})">
+                    <div class="song-tab ${isActive}" 
+                         draggable="true" 
+                         ondragstart="handleDragStart(event, ${index})" 
+                         ondragover="handleDragOver(event)" 
+                         ondrop="handleDrop(event, ${index})" 
+                         onclick="openSongTab(${s.id})" 
+                         title="${s.title} (${s.key})">
                         <span class="tab-name">${s.title}</span>
                         <span class="tab-key">${s.key}</span>
                         <span class="tab-close" onclick="closeSongTab(${s.id}, event)">✕</span>
-                    </button>
+                    </div>
                 `;
             }).join('');
 
@@ -931,6 +934,29 @@
                 alert(`⚠️ พบรูปภาพที่มีปัญหาทั้งหมด ${errorSongs.length} รูป:\n\n` + errorSongs.join('\n'));
             }
         }
+        
+        let draggedIndex = null;
+
+        function handleDragStart(event, index) {
+            draggedIndex = index;
+            event.target.classList.add('dragging');
+        }
+
+        function handleDragOver(event) {
+            event.preventDefault(); // จำเป็นเพื่อให้สามารถวาง (drop) ได้
+        }
+
+        function handleDrop(event, targetIndex) {
+            event.preventDefault();
+            if (draggedIndex === null || draggedIndex === targetIndex) return;
+
+            // สลับตำแหน่งข้อมูลในอาเรย์ openTabs
+            const movedTab = openTabs.splice(draggedIndex, 1)[0];
+            openTabs.splice(targetIndex, 0, movedTab);
+
+            draggedIndex = null;
+            renderLyricsPanel();
+        }   
     </script>
 </body>
 </html>
