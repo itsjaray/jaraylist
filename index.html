@@ -529,6 +529,27 @@
                 margin-left: 0;
             }
         }
+
+        .clear-all-tabs-btn {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .clear-all-tabs-btn:hover {
+            background: rgba(239, 68, 68, 0.3);
+            color: #fff;
+        }
+        
     </style>
 </head>
 <body data-theme="dark">
@@ -851,8 +872,9 @@
                         <div class="tabs-bar">
                             ${tabsHtml}
                         </div>
-                        <div class="toolbar-row">
-                            <button onclick="toggleSidebar()">📋 เมนูเพลง</button>
+                        <div class="toolbar-row" style="display: flex; justify-content: space-between; align-items: center;">
+                            <button onclick="toggleSidebar()">📂 เมนูเพลง</button>
+                            <button class="clear-all-tabs-btn" onclick="clearAllTabs()" title="ปิดแท็บทั้งหมด">🗑️ เคลียร์ทั้งหมด</button>
                         </div>
                     </div>
 
