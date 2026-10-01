@@ -315,6 +315,24 @@
             border-radius: 4px;
         }
 
+        .tab-move {
+            font-size: 0.65rem;
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-muted);
+            background: rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tab-move:hover, .tab-move:active {
+            background: var(--primary-color);
+            color: #fff;
+        }
+
         .song-tab {
             background: var(--bg-color);
             border: 1px solid var(--border-color);
@@ -802,14 +820,17 @@
                 const s = songs.find(item => item.id === tabId);
                 if (!s) return '';
                 const isActive = (tabId === activeTabId) ? 'active' : '';
+                
+                // สร้างปุ่มลูกศรเลื่อนซ้าย/ขวา
+                const moveLeftBtn = index > 0 ? `<span class="tab-move" onclick="moveTab(${index}, -1, event)" title="เลื่อนไปซ้าย">◀</span>` : '';
+                const moveRightBtn = index < openTabs.length - 1 ? `<span class="tab-move" onclick="moveTab(${index}, 1, event)" title="เลื่อนไปขวา">▶</span>` : '';
+
                 return `
-                    <div class="song-tab ${isActive}" 
-                         draggable="true" 
-                         ondragstart="handleDragStart(event, ${index})" 
-                         ondragover="handleDragOver(event)" 
-                         ondrop="handleDrop(event, ${index})" 
-                         onclick="openSongTab(${s.id})" 
-                         title="${s.title} (${s.key})">
+                    <div class="song-tab ${isActive}" onclick="openSongTab(${s.id})" title="${s.title} (${s.key})">
+                        <div style="display: flex; align-items: center; gap: 2px; flex-shrink: 0;">
+                            ${moveLeftBtn}
+                            ${moveRightBtn}
+                        </div>
                         <span class="tab-name">${s.title}</span>
                         <span class="tab-key">${s.key}</span>
                         <span class="tab-close" onclick="closeSongTab(${s.id}, event)">✕</span>
@@ -935,31 +956,17 @@
             }
         }
 
-        
-        
-        let draggedIndex = null;
-
-        function handleDragStart(event, index) {
-            draggedIndex = index;
-            event.target.classList.add('dragging');
+        function moveTab(currentIndex, direction, event) {
+            event.stopPropagation(); // ป้องกันไม่ให้กดแล้วเปิดเพลงซ้ำ
+            const targetIndex = currentIndex + direction;
+            
+            if (targetIndex >= 0 && targetIndex < openTabs.length) {
+                const temp = openTabs[currentIndex];
+                openTabs[currentIndex] = openTabs[targetIndex];
+                openTabs[targetIndex] = temp;
+                renderLyricsPanel();
+            }
         }
-
-        function handleDragOver(event) {
-            event.preventDefault(); // จำเป็นเพื่อให้สามารถวาง (drop) ได้
-        }
-
-        function handleDrop(event, targetIndex) {
-            event.preventDefault();
-            if (draggedIndex === null || draggedIndex === targetIndex) return;
-
-            // สลับตำแหน่งข้อมูลในอาเรย์ openTabs
-            const movedTab = openTabs.splice(draggedIndex, 1)[0];
-            openTabs.splice(targetIndex, 0, movedTab);
-
-            draggedIndex = null;
-            renderLyricsPanel();
-        }   
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/@dragdroptouch/dragdroptouch@0.8.0/dist/drag-drop-touch.esm.min.js" type="module"></script>
 </body>
 </html>
