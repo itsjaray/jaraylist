@@ -13,20 +13,32 @@
             --text-muted: #94a3b8;
             --primary-color: #6366f1;
             --border-color: #334155;
+            --hover-bg: #334155;
         }
+        [data-theme="light"] {
+            --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --primary-color: #6366f1;
+            --hover-bg: #f1f5f9;
+        }
+
         body {
             font-family: 'Prompt', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0;
             padding: 20px;
+            transition: background 0.3s, color 0.3s;
         }
         .header-container {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            max-width: 1200px;
-            margin: 0 auto 30px auto;
+            max-width: 900px;
+            margin: 0 auto 25px auto;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 15px;
         }
@@ -40,63 +52,86 @@
             text-decoration: none;
             font-size: 0.9rem;
         }
-        .back-btn:hover { background: var(--primary-color); }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
+        .back-btn:hover { background: var(--primary-color); color: #fff; }
+
+        /* แท็บเมนูด้านบน */
+        .tabs-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            max-width: 900px;
+            margin: 0 auto 25px auto;
+            flex-wrap: wrap;
         }
-        .category-box {
+        .tab-btn {
+            background: var(--card-bg);
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: 'Prompt', sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .tab-btn:hover {
+            color: var(--text-color);
+            border-color: var(--primary-color);
+        }
+        .tab-btn.active {
+            background: var(--primary-color);
+            color: #ffffff;
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        /* กล่องแสดงเนื้อหาเพลงแต่ละแท็บ */
+        .tab-content {
+            max-width: 900px;
+            margin: 0 auto;
             background: var(--card-bg);
             border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: none;
         }
-        .category-title {
-            font-size: 1.2rem;
+        .tab-content.active {
+            display: block;
+        }
+        .category-title-bar {
+            font-size: 1.3rem;
             font-weight: 600;
-            margin-bottom: 15px;
-            padding-bottom: 8px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
             border-bottom: 2px solid var(--primary-color);
-            display: flex;
-            justify-content: space-between;
-        }
-        .song-item {
-            padding: 8px 0;
-            border-bottom: 1px dashed var(--border-color);
-            font-size: 0.9rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        .song-item:last-child { border-bottom: none; }
-        .song-name { color: var(--text-color); }
+        .song-item {
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.1s;
+        }
+        .song-item:hover {
+            border-color: var(--primary-color);
+        }
+        .song-name { font-size: 0.95rem; font-weight: 400; }
         .song-key {
             background: rgba(99, 102, 241, 0.2);
             color: #818cf8;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-        }
-        [data-theme="light"] {
-            --bg-color: #f4f6f9;
-            --card-bg: #ffffff;
-            --text-color: #1e293b;
-            --text-muted: #64748b;
-            --border-color: #e2e8f0;
-            --primary-color: #6366f1;
-        }
-
-        [data-theme="dark"] {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --text-color: #f8fafc;
-            --text-muted: #94a3b8;
-            --border-color: #334155;
-            --primary-color: #818cf8;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
         }
     </style>
 </head>
@@ -107,55 +142,61 @@
         <a href="index.html" class="back-btn">⬅️ กลับหน้าหลัก</a>
     </div>
 
-    <div class="container" id="categoryContainer">
-        <!-- ข้อมูลจะถูกโหลดมาแสดงที่นี่อัตโนมัติ -->
+    <!-- ปุ่มแท็บสลับหมวดหมู่ -->
+    <div class="tabs-container" id="tabsContainer">
+        <!-- ถูกสร้างอัตโนมัติด้วย JS -->
+    </div>
+
+    <!-- พื้นที่แสดงรายชื่อเพลง -->
+    <div id="contentContainer">
+        <!-- ถูกสร้างอัตโนมัติด้วย JS -->
     </div>
 
     <script>
-        // ใช้ลิสต์เพลงชุดเดียวกับหน้าหลักของคุณ (หรือดึงมาจากอาเรย์เพลงที่คุณมี)
+        // รายชื่อเพลงทั้งหมดที่มีการระบุหมวดหมู่และคีย์เรียบร้อยแล้ว
         const imageFiles = [
             "[กลาง] ช่วยไม่ได้ (CAN'T HELP) - URBOYTJ - SELFMADE (Key B).png",
-                "[เร็ว] ด้วยรักและฟัคยู - HYE FT. GAVIN.D - Single (Key A). GAVIN.D - Single (Key A).png",
-                "[เร็ว] เสือสิ้นลาย - F.HERO Ft. P-Hot, YOUNGOHM, FYMME - INTO THE NEW ERA (Key C).png",
-                "[เร็ว] ทรงอย่างแบด (Bad Boy) - Paper Planes - 1% (Key D).png",
-                "[เร็ว] เสแสร้ง (Pretend) - Paper Planes Feat. MOON - 1% (Key D).png",
-                "[เร็ว] น้อง - Three Man Down Feat. URBOYTJ - Single (Key A).png",
-                "[เร็ว] Hotel Lobby - Tobii - Mr. Saxo Love (Key A).png",
-                "[เร็ว] รักสนุก - Flame - จุดเดือด (Key Am or C).png",
-                "[กลาง] ถูกที่ผิดเวลา - Hobbit - Display (Key C).png",
-                "[กลาง] ก่อนตาย - Big Ass - XL (Key D).png",
-                "[กลาง] DAY ONE - PUN - PUN (Key C).png",
-                "[กลาง] I Just Wanna Know - PUN - PUN (Key A).png",
-                "[ช้า] กำแพงหัวใจ - Mirrr - MAI ME (Key A).png",
-                "[เร็ว] เรื่องราวความรักในตำนาน - YOUNGOHM - BANGKOK LEGACY (Key Bb).png",
-                "[เร็ว] Benz ดำ - YOUNGOHM - ไฟกลางคืน (Key Em or G).png",
-                "[ช้า] เมื่อไหร่จะมี (มีใจให้กัน) - BLVCKHEART - Single (Key A).png",
-                "[กลาง] Sunset in Pattaya - YOUNGOHM - ไฟกลางคืน (Key E).png",
-                "[กลาง] ขึ้นใจ (3am call) - Mirrr Ft. BLVCKHEART - Single (Key C).png",
-                "[สากล] FE!N - Travis Scott ft. Playboi Carti - Single (Key Em or G).jpeg",
-                "[เร็ว] Baddie - IRONBOY FT. Justmine JMNK - Single (Key E).jpeg",
-                "[กลาง] Rain Zone - MAIYARAP FT. Z9 - Single (Key E).png",
-                "[เร็ว] Bad Girl Like you - Tobii - Single (Key Em or G).jpeg",
-                "[ช้า] Faded - 2Ectasy Ft. Z9 - Single (Key D).jpeg",
-                "[กลาง] PROMETHAZINE - SARAN FT.BLACKHEART & DIAMOND MQT - Single (Key A).jpeg",
-                "[ช้า] ROR T MT - GAVIN.D FT. 1MILL - Single (Key G).png",
-                "[เร็ว] ตัวละครเอก - Hunsik - Single (Key G).jpeg",
-                "[สากล] Sorry - Justin Bieber - Single (Key E).jpeg",
-                "[เร็ว] Medley เมื่อไหร่+BADBOY+TMRW (Key E-G-B).jpeg",
-                "[กลาง] Medley เค้าก่อน+แฟนใหม่หน้าคุ้น+หลอก (Key C).jpeg",
-                "[กลาง] Medley รักที่ยืมเค้ามา+ครั้งสุดท้าย+ไร้รัก+ไม่เฟี้ยว (Key B-B-E-E).jpeg",
-                "[เร็ว] กุหลาบเวียงพิงค์ - ILLSLICK Feat. T-Front - Single (Key).jpeg",
-                "[ช้า] ลูกคุณหนู - MEYOU FT. PUN - Single (Key A).jpeg",
-                "[เร็ว] เปิดใจไม่เปิดตัว - TIMETHAI - Every Time (Key Em or G).JPG",
-                "[กลาง] เก็บไว้ในใจไม่พอ - MAIYARAP X THREE MAN DOWN - Single (Key A).jpeg",
-                "[กลาง] Try to - MAIYARAP - Single (Key G).jpeg",
-                "[ช้า] เพียงเธอ - MEYOU - Single (Key A).jpeg",
-                "[กลาง] Very Very Small - YOUNGOHM - ธาตุทองซาวด์ (Key A).jpeg",
-                "[กลาง] เด็กอินเตอร์ - YOUNGOHM - ธาตุทองซาวด์ (Key Em or G ขึ้น Am).jpeg",
-                "[กลาง] ฉบับปรับปรุง - ZENTYARB x PUNYARB Ft. LAZYLOXY - Single (Key C).jpeg",
-                "[เร็ว] ซุปเปอร์ไซย่า - URBOYTJ FT.MAIYARAP - Single (Key F).jpeg",
-                "[กลาง] Her - YENTED FT. ARARYOZI , CHOCOLATE-T - Single (Key C).png",
-                "[กลาง] เจ้าของที่ - Mirrr - Single (Key F).jpeg"
+            "[เร็ว] ด้วยรักและฟัคยู - HYE FT. GAVIN.D - Single (Key A). GAVIN.D - Single (Key A).png",
+            "[เร็ว] เสือสิ้นลาย - F.HERO Ft. P-Hot, YOUNGOHM, FYMME - INTO THE NEW ERA (Key C).png",
+            "[เร็ว] ทรงอย่างแบด (Bad Boy) - Paper Planes - 1% (Key D).png",
+            "[เร็ว] เสแสร้ง (Pretend) - Paper Planes Feat. MOON - 1% (Key D).png",
+            "[เร็ว] น้อง - Three Man Down Feat. URBOYTJ - Single (Key A).png",
+            "[เร็ว] Hotel Lobby - Tobii - Mr. Saxo Love (Key A).png",
+            "[เร็ว] รักสนุก - Flame - จุดเดือด (Key Am or C).png",
+            "[กลาง] ถูกที่ผิดเวลา - Hobbit - Display (Key C).png",
+            "[กลาง] ก่อนตาย - Big Ass - XL (Key D).png",
+            "[กลาง] DAY ONE - PUN - PUN (Key C).png",
+            "[กลาง] I Just Wanna Know - PUN - PUN (Key A).png",
+            "[ช้า] กำแพงหัวใจ - Mirrr - MAI ME (Key A).png",
+            "[เร็ว] เรื่องราวความรักในตำนาน - YOUNGOHM - BANGKOK LEGACY (Key Bb).png",
+            "[เร็ว] Benz ดำ - YOUNGOHM - ไฟกลางคืน (Key Em or G).png",
+            "[ช้า] เมื่อไหร่จะมี (มีใจให้กัน) - BLVCKHEART - Single (Key A).png",
+            "[กลาง] Sunset in Pattaya - YOUNGOHM - ไฟกลางคืน (Key E).png",
+            "[กลาง] ขึ้นใจ (3am call) - Mirrr Ft. BLVCKHEART - Single (Key C).png",
+            "[สากล] FE!N - Travis Scott ft. Playboi Carti - Single (Key Em or G).jpeg",
+            "[เร็ว] Baddie - IRONBOY FT. Justmine JMNK - Single (Key E).jpeg",
+            "[กลาง] Rain Zone - MAIYARAP FT. Z9 - Single (Key E).png",
+            "[เร็ว] Bad Girl Like you - Tobii - Single (Key Em or G).jpeg",
+            "[ช้า] Faded - 2Ectasy Ft. Z9 - Single (Key D).jpeg",
+            "[กลาง] PROMETHAZINE - SARAN FT.BLACKHEART & DIAMOND MQT - Single (Key A).jpeg",
+            "[ช้า] ROR T MT - GAVIN.D FT. 1MILL - Single (Key G).png",
+            "[เร็ว] ตัวละครเอก - Hunsik - Single (Key G).jpeg",
+            "[สากล] Sorry - Justin Bieber - Single (Key E).jpeg",
+            "[เร็ว] Medley เมื่อไหร่+BADBOY+TMRW (Key E-G-B).jpeg",
+            "[กลาง] Medley เค้าก่อน+แฟนใหม่หน้าคุ้น+หลอก (Key C).jpeg",
+            "[กลาง] Medley รักที่ยืมเค้ามา+ครั้งสุดท้าย+ไร้รัก+ไม่เฟี้ยว (Key B-B-E-E).jpeg",
+            "[เร็ว] กุหลาบเวียงพิงค์ - ILLSLICK Feat. T-Front - Single (Key).jpeg",
+            "[ช้า] ลูกคุณหนู - MEYOU FT. PUN - Single (Key A).jpeg",
+            "[เร็ว] เปิดใจไม่เปิดตัว - TIMETHAI - Every Time (Key Em or G).JPG",
+            "[กลาง] เก็บไว้ในใจไม่พอ - MAIYARAP X THREE MAN DOWN - Single (Key A).jpeg",
+            "[กลาง] Try to - MAIYARAP - Single (Key G).jpeg",
+            "[ช้า] เพียงเธอ - MEYOU - Single (Key A).jpeg",
+            "[กลาง] Very Very Small - YOUNGOHM - ธาตุทองซาวด์ (Key A).jpeg",
+            "[กลาง] เด็กอินเตอร์ - YOUNGOHM - ธาตุทองซาวด์ (Key Em or G ขึ้น Am).jpeg",
+            "[กลาง] ฉบับปรับปรุง - ZENTYARB x PUNYARB Ft. LAZYLOXY - Single (Key C).jpeg",
+            "[เร็ว] ซุปเปอร์ไซย่า - URBOYTJ FT.MAIYARAP - Single (Key F).jpeg",
+            "[กลาง] Her - YENTED FT. ARARYOZI , CHOCOLATE-T - Single (Key C).png",
+            "[กลาง] เจ้าของที่ - Mirrr - Single (Key F).jpeg"
         ];
 
         function parseSongs() {
@@ -163,9 +204,9 @@
                 let nameWithoutExt = filename.substring(0, filename.lastIndexOf('.')) || filename;
                 let title = nameWithoutExt;
                 let key = "-";
-                let category = "🚶 เพลงจังหวะกลาง"; // ค่าเริ่มต้น
+                let category = "🚶 เพลงจังหวะกลาง";
                 
-                // 1. ดึงหมวดหมู่จากวงเล็บหน้าสุด เช่น [ช้า], [กลาง], [เร็ว], [สากล]
+                // ดึงหมวดหมู่จากวงเล็บหน้าสุด
                 const categoryMatch = nameWithoutExt.match(/^\[(.*?)\]/);
                 if (categoryMatch) {
                     let catText = categoryMatch[1].trim();
@@ -174,11 +215,10 @@
                     else if (catText.includes("เร็ว")) category = "🔥 เพลงเร็ว";
                     else if (catText.includes("สากล")) category = "🌍 สากล";
                     
-                    // ตัดวงวดหมู่ออกเพื่อให้เหลือแค่ชื่อเพลงจริง ๆ
                     title = nameWithoutExt.replace(categoryMatch[0], '').trim();
                 }
 
-                // 2. ดึง Key ออกมา (ถ้ามีในวงเล็บท้ายชื่อ)
+                // ดึง Key ออกมา (ถ้ามีในวงเล็บท้ายชื่อ)
                 const keyMatch = title.match(/\((Key\s*[^)]+)\)/i);
                 if (keyMatch) {
                     key = keyMatch[1].trim();
@@ -189,7 +229,7 @@
             });
         }
 
-        function renderCategories() {
+        function renderTabs() {
             const songs = parseSongs();
             const categories = {
                 "🐢 เพลงช้า": [],
@@ -206,24 +246,38 @@
                 }
             });
 
-            const container = document.getElementById('categoryContainer');
-            container.innerHTML = '';
+            const tabsContainer = document.getElementById('tabsContainer');
+            const contentContainer = document.getElementById('contentContainer');
+            
+            tabsContainer.innerHTML = '';
+            contentContainer.innerHTML = '';
+
+            let isFirst = true;
 
             for (let [catName, catSongs] of Object.entries(categories)) {
-                let boxHTML = `
-                    <div class="category-box">
-                        <div class="category-title">
+                let tabId = 'cat-' + btoa(unescape(encodeURIComponent(catName))).replace(/=/g, '');
+
+                // สร้างปุ่มแท็บ
+                tabsContainer.innerHTML += `
+                    <button class="tab-btn ${isFirst ? 'active' : ''}" onclick="switchTab('${tabId}', this)">
+                        ${catName} (${catSongs.length})
+                    </button>
+                `;
+
+                // สร้างเนื้อหาของแต่ละแท็บ
+                let contentHTML = `
+                    <div id="${tabId}" class="tab-content ${isFirst ? 'active' : ''}">
+                        <div class="category-title-bar">
                             <span>${catName}</span>
-                            <span style="font-size: 0.9rem; color: var(--text-muted);">(${catSongs.length} เพลง)</span>
+                            <span style="font-size: 0.9rem; color: var(--text-muted);">ทั้งหมด ${catSongs.length} เพลง</span>
                         </div>
-                        <div>
                 `;
 
                 if (catSongs.length === 0) {
-                    boxHTML += `<div style="color: var(--text-muted); font-size: 0.85rem; text-align: center; padding: 10px;">ไม่มีเพลงในหมวดนี้</div>`;
+                    contentHTML += `<div style="color: var(--text-muted); text-align: center; padding: 30px;">ไม่มีเพลงในหมวดนี้</div>`;
                 } else {
                     catSongs.forEach(song => {
-                        boxHTML += `
+                        contentHTML += `
                             <div class="song-item">
                                 <span class="song-name">${song.title}</span>
                                 <span class="song-key">${song.key}</span>
@@ -232,40 +286,28 @@
                     });
                 }
 
-                boxHTML += `</div></div>`;
-                container.innerHTML += boxHTML;
+                contentHTML += `</div>`;
+                contentContainer.innerHTML += contentHTML;
+
+                isFirst = false;
             }
         }
 
-        // ฟังก์ชันกดสลับโหมด
-        function toggleTheme() {
-            document.body.classList.toggle('light-mode');
-            const btn = document.getElementById('themeToggleButton');
-            if (document.body.classList.contains('light-mode')) {
-                localStorage.setItem('theme', 'light');
-                btn.textContent = '🌙 โหมดมืด';
-            } else {
-                localStorage.setItem('theme', 'dark');
-                btn.textContent = '☀️ โหมดสว่าง';
-            }
-        }
+        function switchTab(tabId, btnElement) {
+            // ซ่อนเนื้อหาทั้งหมดและปิดแอคทีฟปุ่ม
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
 
-        // ตรวจสอบและซิงค์ธีมจากหน้าหลักอัตโนมัติ
-        function applySavedTheme() {
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'light') {
-                document.body.classList.add('light-mode');
-            } else {
-                document.body.classList.remove('light-mode');
-            }
+            // เปิดแสดงแท็บที่เลือก
+            document.getElementById(tabId).classList.add('active');
+            btnElement.classList.add('active');
         }
 
         window.addEventListener('DOMContentLoaded', () => {
             const savedTheme = localStorage.getItem('theme') || 'dark';
             document.body.setAttribute('data-theme', savedTheme);
-            renderCategories();
+            renderTabs();
         });
-        
     </script>
 </body>
 </html>
