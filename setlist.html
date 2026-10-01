@@ -81,13 +81,24 @@
             border-radius: 4px;
             font-size: 0.8rem;
         }
+        /* ธีมโหมดสว่าง */
+        body.light-mode {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+        }
     </style>
 </head>
 <body>
 
     <div class="header-container">
         <h2>🎵 หมวดหมู่เซ็ตลิสต์เพลง</h2>
-        <a href="index.html" class="back-btn">⬅️ กลับหน้าหลัก</a>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <button id="themeToggleButton" onclick="toggleTheme()" style="background: var(--card-bg); color: var(--text-color); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-family: 'Prompt', sans-serif; font-size: 0.9rem;">☀️ โหมดสว่าง</button>
+            <a href="index.html" class="back-btn">⬅️ กลับหน้าหลัก</a>
+        </div>
     </div>
 
     <div class="container" id="categoryContainer">
@@ -179,7 +190,38 @@
             }
         }
 
-        renderCategories();
+        // ฟังก์ชันกดสลับโหมด
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            const btn = document.getElementById('themeToggleButton');
+            if (document.body.classList.contains('light-mode')) {
+                localStorage.setItem('theme', 'light');
+                btn.textContent = '🌙 โหมดมืด';
+            } else {
+                localStorage.setItem('theme', 'dark');
+                btn.textContent = '☀️ โหมดสว่าง';
+            }
+        }
+
+        // ตรวจสอบและโหลดธีมที่เคยเลือกไว้ตอนเปิดหน้าเว็บ
+        function applySavedTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const btn = document.getElementById('themeToggleButton');
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-mode');
+                if (btn) btn.textContent = '🌙 โหมดมืด';
+            } else {
+                document.body.classList.remove('light-mode');
+                if (btn) btn.textContent = '☀️ โหมดสว่าง';
+            }
+        }
+
+        // เรียกใช้งานตอนโหลดหน้าเว็บ
+        window.addEventListener('DOMContentLoaded', () => {
+            applySavedTheme();
+            renderCategories();
+        });
+        
     </script>
 </body>
 </html>
