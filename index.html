@@ -280,7 +280,7 @@
             flex-direction: column;
         }
 
-        /* แถบ Tabs อยู่ด้านบนสุด เหนือปุ่มเมนูตามที่คุณต้องการ */
+        /* แถบ Tabs ด้านบนสุด รองรับหน้าจอสัมผัส iPad */
         .top-tabs-container {
             position: sticky;
             top: -24px;
@@ -300,14 +300,15 @@
 
         .tabs-bar {
             display: flex;
-            gap: 6px;
+            gap: 8px;
             overflow-x: auto;
             width: 100%;
-            padding-bottom: 4px;
+            padding-bottom: 6px;
             scrollbar-width: thin;
+            -webkit-overflow-scrolling: touch;
         }
         .tabs-bar::-webkit-scrollbar {
-            height: 4px;
+            height: 6px;
         }
         .tabs-bar::-webkit-scrollbar-thumb {
             background: var(--border-color);
@@ -318,17 +319,15 @@
             background: var(--bg-color);
             border: 1px solid var(--border-color);
             color: var(--text-muted);
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 0.8rem;
+            padding: 6px 10px 6px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
             gap: 8px;
             white-space: nowrap;
-            max-width: 240px;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            flex-shrink: 0;
             box-shadow: none;
         }
         .song-tab:hover {
@@ -342,22 +341,36 @@
             font-weight: 600;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
+        .tab-name {
+            max-width: 140px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
         .tab-key {
             font-size: 0.75rem;
             color: #f43f5e;
             background: rgba(244, 63, 94, 0.1);
-            padding: 1px 5px;
+            padding: 2px 6px;
             border-radius: 4px;
             font-weight: 600;
         }
+        /* ขยายพื้นที่และขนาดปุ่มปิดให้กดง่ายบน iPad นิ้วจิ้มโดนแน่นอน */
         .tab-close {
-            font-size: 0.75rem;
-            padding: 2px;
+            font-size: 0.85rem;
+            width: 22px;
+            height: 22px;
             border-radius: 50%;
-            line-height: 1;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-muted);
+            background: rgba(0, 0, 0, 0.04);
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: all 0.2s;
         }
-        .tab-close:hover {
-            background: rgba(244, 63, 94, 0.15);
+        .tab-close:hover, .tab-close:active {
+            background: rgba(244, 63, 94, 0.2);
             color: #f43f5e;
         }
 
@@ -367,7 +380,6 @@
             align-items: center;
         }
 
-        /* ส่วนหัวข้อแสดงชื่อเพลงและศิลปินดั้งเดิมกลับมาแล้ว */
         .lyrics-header {
             display: flex;
             justify-content: space-between;
@@ -420,7 +432,6 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
 
-        /* Modal สำหรับแสดงภาพแบบเต็มจอ และคลิกที่รูปเพื่อปิด */
         .image-modal {
             display: none;
             position: fixed;
@@ -600,8 +611,8 @@
 
         let songs = [];
         let selectedCategory = 'All';
-        let openTabs = [];      // เก็บรายการ ID เพลงที่เปิดเป็นแท็บไว้
-        let activeTabId = null; // ID ของเพลงที่กำลังแสดงอยู่ปัจจุบัน
+        let openTabs = [];      
+        let activeTabId = null; 
 
         function parseSongsFromFilenames() {
             songs = imageFiles.map((filename, index) => {
@@ -743,7 +754,6 @@
             });
         }
 
-        // จัดการเปิดเพลงในระบบ Tab
         function openSongTab(id) {
             if (!openTabs.includes(id)) {
                 openTabs.push(id);
@@ -752,9 +762,8 @@
             renderLyricsPanel();
         }
 
-        // ปิด Tab
         function closeSongTab(id, event) {
-            event.stopPropagation(); // ป้องกันไม่ให้คลิกแล้วเป็นการเปิดเพลงนั้น
+            event.stopPropagation(); 
             const index = openTabs.indexOf(id);
             if (index !== -1) {
                 openTabs.splice(index, 1);
@@ -790,14 +799,13 @@
             const song = songs.find(s => s.id === activeTabId);
             if (!song) return;
 
-            // สร้าง HTML ของแท็บทั้งหมด (สำหรับวางไว้ด้านบนสุดเหนือปุ่มเมนู)
             let tabsHtml = openTabs.map(tabId => {
                 const s = songs.find(item => item.id === tabId);
                 if (!s) return '';
                 const isActive = (tabId === activeTabId) ? 'active' : '';
                 return `
                     <button class="song-tab ${isActive}" onclick="openSongTab(${s.id})" title="${s.title} (${s.key})">
-                        <span>${s.title}</span>
+                        <span class="tab-name">${s.title}</span>
                         <span class="tab-key">${s.key}</span>
                         <span class="tab-close" onclick="closeSongTab(${s.id}, event)">✕</span>
                     </button>
@@ -806,17 +814,15 @@
 
             panel.innerHTML = `
                 <div class="lyrics-content">
-                    <!-- แถบ Tabs และปุ่มเมนูด้านบนสุด -->
                     <div class="top-tabs-container">
                         <div class="tabs-bar">
                             ${tabsHtml}
                         </div>
                         <div class="toolbar-row">
-                            <button onclick="toggleSidebar()">📋 เมนูเพลง</button>
+                            <button onclick="toggleSidebar()">📋 เมนู</button>
                         </div>
                     </div>
 
-                    <!-- ส่วนหัวข้อชื่อเพลงและศิลปิน (แบบเดิมกลับมาแล้ว) -->
                     <div class="lyrics-header">
                         <div>
                             <h2>${song.title}</h2>
@@ -825,7 +831,6 @@
                         <div class="song-key-badge">${song.key}</div>
                     </div>
 
-                    <!-- รูปภาพเนื้อเพลง -->
                     <div class="lyrics-image-container" onclick="openModal('${song.image}', '${song.title}')">
                         <img src="${song.image}" alt="${song.title}" class="lyrics-image">
                     </div>
