@@ -700,7 +700,12 @@
         window.onload = function() {
             parseSongsFromFilenames();
             renderCategories();
+            loadTabsState(); // โหลด Tabs ที่เปิดค้างไว้กลับมา
             renderSongList(songs);
+
+            if (openTabs.length > 0) {
+                renderLyricsPanel(); // ถ้ามีแท็บค้างอยู่ ให้เรนเดอร์แผงเนื้อเพลงขึ้นมาเลย
+            }
         };
 
         function renderCategories() {
@@ -773,6 +778,7 @@
                 openTabs.push(id);
             }
             activeTabId = id;
+            saveTabsState(); // เซฟสถานะลงเครื่อง
             renderLyricsPanel();
         }
 
@@ -793,6 +799,7 @@
                     sidebar.classList.remove('hidden');
                 }
             }
+            saveTabsState(); // เซฟสถานะลงเครื่อง
             renderLyricsPanel();
         }
 
@@ -964,9 +971,28 @@
                 const temp = openTabs[currentIndex];
                 openTabs[currentIndex] = openTabs[targetIndex];
                 openTabs[targetIndex] = temp;
+                saveTabsState(); // เซฟสถานะลงเครื่อง
                 renderLyricsPanel();
             }
         }
+
+        function saveTabsState() {
+            localStorage.setItem('jaray_openTabs', JSON.stringify(openTabs));
+            localStorage.setItem('jaray_activeTabId', activeTabId);
+        }
+
+        function loadTabsState() {
+            const savedTabs = localStorage.getItem('jaray_openTabs');
+            const savedActive = localStorage.getItem('jaray_activeTabId');
+    
+            if (savedTabs) {
+                openTabs = JSON.parse(savedTabs).map(Number);
+            }
+            if (savedActive && savedActive !== "null") {
+                activeTabId = Number(savedActive);
+            }
+        }
+        
     </script>
 </body>
 </html>
